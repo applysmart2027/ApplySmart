@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: awaiting approval of Increment 1.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increment 1 built and verified; Increment 2 awaiting approval.
 
 ## 1. Goals
 
@@ -21,10 +21,11 @@ Out of scope: backend APIs, persistence, authentication, cloud deployment, resum
 - The September project report documents React for the UI, Django for the backend, PostgreSQL and AWS. Only the React UI is in scope now.
 - No Visual Paradigm exports (wireframes, wireflows, domain model, glossary) are available locally. They must be supplied before Increment 3.
 - Toolchain available: Node 24.11, npm 11.6, git 2.51. GitHub CLI present but not authenticated.
+- Later the same day: the private repository `applysmart2027/ApplySmart` was created and the first commit pushed. A written UI specification for the six screens and the shell replaced the need for wireframe exports. Decisions D1 to D4 and D7 below are resolved; D5 and D6 are applied as assumptions.
 
 ## 4. Technical architecture
 
-Stack: React 19, TypeScript, Vite, react-router v7, plain CSS with custom properties. Dev tooling: ESLint (Vite template), Prettier, and, pending approval, Vitest with React Testing Library.
+Stack: React 19, TypeScript 6, Vite 8, react-router v7 (from Increment 2), plain CSS with custom properties. Dev tooling as scaffolded on 2026-10-16: oxlint (the Vite template's linter), Prettier, Vitest 5 with React Testing Library and jsdom. Decisions are recorded in `docs/adr/`.
 
 ```text
 frontend/                       (decision D1: folder name)
@@ -92,8 +93,8 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 
 | # | Ticket | Objective | Verify | Est. (planning only) |
 |---|---|---|---|---|
-| 1 | 275 | Vite react-ts scaffold, template demo removed, Prettier, README, this plan in repo | install, build, lint, dev server shows heading | 1 h |
-| 2 | 275 | react-router, AppShell, dashboard, tokens and base styles, route table, one placeholder page per teammate area, DESIGN.md | all four nav links resolve; build, lint | 2 h |
+| 1 | 275 | Done 2026-10-16: Vite react-ts scaffold in `frontend/`, template demo removed, Prettier, Vitest, READMEs, four ADRs | install, build, lint, test, format check all pass; dev server shows heading | 1.5 h |
+| 2 | 275 | react-router, AppShell with header and sidebar, dashboard, tokens and base styles, route table, one placeholder page per teammate area, DESIGN.md | all five nav links resolve; build, lint, test | 2 h |
 | 3 | 276.1 | List with mock data, search, filter, sort, empty state | render and filter tests, manual | 3 h |
 | 4 | 276.2 | Create form, validation, mock save, simulated failure | validation tests, create flow test | 3 h |
 | 5 | 276.3 | Details screen with resume, notes, contacts, links | render test | 1.5 h |
@@ -109,13 +110,14 @@ Each increment: explain files first, implement, verify, summarize, stop for appr
 
 ## 7. Decisions pending
 
-- D1 Repository layout: app in `frontend/` of the team repo (recommended) or at the root. Needs the repo URL.
-- D2 Stack confirmation: React 19, TypeScript, Vite, react-router v7, plain CSS.
-- D3 Testing dev dependencies: Vitest, React Testing Library, jest-dom, jsdom.
-- D4 Approval to create one placeholder page inside each teammate's feature folder in Increment 2.
-- D5 Application status vocabulary from the Part II glossary. Assumed: Saved, Applied, Interview, Offer, Rejected, Withdrawn.
-- D6 Contact name and email as optional form fields, so the details screen's contact data is editable.
-- D7 Wireframe exports for the six screens and the dashboard, required before Increment 3.
+- D1 Resolved: app in `frontend/` of `applysmart2027/ApplySmart`.
+- D2 Resolved: React 19, TypeScript, Vite, react-router v7, plain CSS (ADR-0001, ADR-0002).
+- D3 Resolved: Vitest, React Testing Library, jest-dom, jsdom installed in Increment 1.
+- D4 Resolved: one placeholder page per teammate feature folder in Increment 2, approved by Anthony.
+- D5 Open: application status vocabulary from the Part II glossary. Applied as an assumption: Saved, Applied, Interview, Offer, Rejected, Withdrawn.
+- D6 Open: contact name and email as optional form fields. Applied as an assumption so the details screen's contact data stays editable.
+- D7 Resolved: the written UI specification received 2026-10-16 replaces the wireframe exports.
+- D8 Resolved: realistic fictional employer names in sample data instead of "ABC Corp" and "XYZ Inc"; resume selection as an in-page step; Stride-like visual direction (light neutral surfaces, one deep-blue accent).
 
 ## 8. Verification strategy
 
