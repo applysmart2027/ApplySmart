@@ -1,0 +1,25 @@
+# AI assistant instruction and tooling files: never pushed
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+DESIGN.md
+.claude/
+.cursor/
+.cursorrules
+skills-lock.json
+anti-slop/
+
+# Node
+node_modules/
+dist/
+*.log
+npm-debug.log*
+
+# Environment and editor
+.env
+.env.*
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
