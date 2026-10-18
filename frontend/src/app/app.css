@@ -1,6 +1,6 @@
 .shell {
   display: grid;
-  grid-template-columns: 16rem 1fr;
+  grid-template-columns: 14rem 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
     'header header'
@@ -35,7 +35,8 @@
 
 .shell-brand {
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
   color: var(--color-text);
   text-decoration: none;
 }
@@ -47,13 +48,14 @@
 
 .shell-nav {
   grid-area: sidebar;
-  padding: var(--space-4) 0;
+  padding: var(--space-4) var(--space-3);
   background: var(--color-surface);
   border-right: var(--border);
 }
 
-.shell-nav ul,
-.area-list {
+.shell-nav ul {
+  display: grid;
+  gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -61,26 +63,28 @@
 
 .shell-nav a {
   display: block;
-  padding: var(--space-2) var(--space-6);
-  border-left: 3px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--color-text-muted);
   text-decoration: none;
 }
 
 .shell-nav a:hover {
   color: var(--color-text);
+  background: var(--color-bg);
 }
 
 .shell-nav a[aria-current='page'] {
-  border-left-color: var(--color-accent);
   font-weight: 600;
   color: var(--color-accent);
+  background: var(--color-accent-soft);
 }
 
 .shell-main {
   grid-area: main;
-  max-width: 64rem;
+  max-width: 72rem;
   padding: var(--space-8) var(--space-6);
 }
 
@@ -89,16 +93,24 @@
 }
 
 .area-list {
-  max-width: 40rem;
-  margin-top: var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0 var(--space-6);
+  list-style: none;
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .area-list li {
-  padding: var(--space-4) 0;
+  padding: var(--space-6) 0;
 }
 
 .area-list li + li {
   border-top: var(--border);
+}
+
+.area-list .text-link {
+  font-size: var(--text-lg);
 }
 
 .area-list p {
@@ -130,20 +142,13 @@
   .shell-nav ul {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
-  }
-
-  .shell-nav a {
-    padding: var(--space-2);
-    border-left: 0;
-    border-bottom: 3px solid transparent;
-  }
-
-  .shell-nav a[aria-current='page'] {
-    border-bottom-color: var(--color-accent);
   }
 
   .shell-main {
     padding: var(--space-6) var(--space-4);
+  }
+
+  .area-list {
+    padding: 0 var(--space-4);
   }
 }

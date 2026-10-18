@@ -35,11 +35,11 @@ Run `build`, `lint`, `test`, and `format:check` before opening a pull request. A
 
 Code lives under `src/` and is organised by feature. See `docs/adr/0003-feature-based-structure.md` at the repository root for the folder rules and the import direction.
 
-| Folder                 | What it holds                                                                                                                                                                       |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`             | The router, the shell (header and sidebar), the dashboard, the not-found page, and `routes.tsx`, which pulls in every feature's routes                                              |
-| `src/features/<area>/` | One functional area. `index.ts` exports the area's routes and is the only file other folders may import                                                                             |
-| `src/shared/styles/`   | `tokens.css` holds every colour, font size, spacing step and border as a CSS variable; `base.css` holds global element styles and the shared `.page-intro` and `.text-link` classes |
+| Folder                 | What it holds                                                                                                                                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`             | The router, the shell (header and sidebar), the dashboard, the not-found page, and `routes.tsx`, which pulls in every feature's routes                                                                                |
+| `src/features/<area>/` | One functional area. `index.ts` exports the area's routes and is the only file other folders may import                                                                                                               |
+| `src/shared/styles/`   | `tokens.css` loads the Mulish font and holds every colour, font size, spacing step, radius and border as a CSS variable; `base.css` holds global element styles and the shared `.page-intro` and `.text-link` classes |
 
 To add a screen to your area, add a route to your feature's `index.ts`. You do not need to edit `src/app/`. Use the variables in `tokens.css` for any colour or spacing; a colour value written anywhere else is a review failure.
 

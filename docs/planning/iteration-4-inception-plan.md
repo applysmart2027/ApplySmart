@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 and 2 built and verified; Increment 3 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1, 2 and 2b built and verified; Increment 3 awaiting approval.
 
 ## 1. Goals
 
@@ -98,6 +98,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 |---|---|---|---|---|
 | 1 | 275 | Done 2026-10-16: Vite react-ts scaffold in `frontend/`, template demo removed, Prettier, Vitest, READMEs, four ADRs | install, build, lint, test, format check all pass; dev server shows heading | 1.5 h |
 | 2 | 275 | Done 2026-10-17: react-router 8.4, app shell with header and sidebar, dashboard, tokens and base styles, route table, not-found page, a placeholder page in each feature folder, DESIGN.md | build, lint, 6 tests, format check pass; checked in headless Chrome at 1280 and 375 px wide, keyboard order and skip link | 2 h |
+| 2b | 275 | Done 2026-10-17: Mulish as the app typeface, vivid blue accent, pill navigation, rounded dashboard panel, short sidebar labels (ADR-0005) | build, lint, 6 tests, format check pass; every element renders in Mulish in Chrome; no overflow at 375 px | 1.5 h |
 | 3 | 276.1 | List with mock data, search, filter, sort, empty state | render and filter tests, manual | 3 h |
 | 4 | 276.2 | Create form, validation, mock save, simulated failure | validation tests, create flow test | 3 h |
 | 5 | 276.3 | Details screen with resume, notes, contacts, links | render test | 1.5 h |
@@ -120,7 +121,7 @@ Each increment: explain files first, implement, verify, summarize, stop for appr
 - D5 Open: application status vocabulary from the Part II glossary. Applied as an assumption: Saved, Applied, Interview, Offer, Rejected, Withdrawn.
 - D6 Open: contact name and email as optional form fields. Applied as an assumption so the details screen's contact data stays editable.
 - D7 Resolved: the written UI specification received 2026-10-16 replaces the wireframe exports.
-- D8 Resolved: realistic fictional employer names in sample data instead of "ABC Corp" and "XYZ Inc"; resume selection as an in-page step; Stride-like visual direction (light neutral surfaces, one deep-blue accent).
+- D8 Resolved: realistic fictional employer names in sample data instead of "ABC Corp" and "XYZ Inc"; resume selection as an in-page step; a light, precise visual direction recorded in ADR-0005.
 
 ## 8. Verification strategy
 

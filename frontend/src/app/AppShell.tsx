@@ -23,7 +23,7 @@ export function AppShell() {
           </li>
           {areas.map((area) => (
             <li key={area.path}>
-              <NavLink to={area.path}>{area.name}</NavLink>
+              <NavLink to={area.path}>{area.label}</NavLink>
             </li>
           ))}
         </ul>

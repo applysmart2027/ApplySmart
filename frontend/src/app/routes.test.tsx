@@ -20,10 +20,10 @@ test('the dashboard lists every area in the sidebar and in the page', () => {
 });
 
 test.each([
-  ['Job Discovery and Application Tracking', 'Application Records'],
-  ['Resume Management and Parsing', 'Resume Management and Parsing'],
-  ['Resume Matching and Gap Analysis', 'Resume Matching and Gap Analysis'],
-  ['Recommendations, Analytics and Follow-ups', 'Recommendations, Analytics and Follow-ups'],
+  ['Applications', 'Application Records'],
+  ['Resumes', 'Resume Management and Parsing'],
+  ['Matching', 'Resume Matching and Gap Analysis'],
+  ['Recommendations', 'Recommendations, Analytics and Follow-ups'],
 ])('the "%s" link opens its page and is the only current link', (linkName, heading) => {
   renderAt('/');
 
