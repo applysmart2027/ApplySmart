@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1, 2 and 2b built and verified; Increment 3 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 3 built and verified; Increment 4 awaiting approval.
 
 ## 1. Goals
 
@@ -42,10 +42,12 @@ frontend/                       (decision D1: folder name)
       app.css                   shell and dashboard styles
     features/
       applications/             Anthony, SCRUM-276
-        index.ts                routes, ApplicationsProvider, useApplications
-        types.ts                ApplicationRecord, ApplicationStatus, ResumeRef
-        sampleData.ts           hard-coded records and sample resume references
-        store.tsx               context + reducer: list, get, create, update, remove
+        index.ts                routes and ApplicationsProvider
+        types.ts                ApplicationRecord, ApplicationStatus, APPLICATION_STATUSES
+        sampleData.ts           six hard-coded records
+        store.ts                context and useApplications; the reducer joins in Increment 4
+        ApplicationsProvider.tsx  mounts the records once, above the router
+        NotBuiltYetPage.tsx     stands in for screens until their increment lands
         validation.ts           pure form rules
         routes.tsx
         ApplicationsListPage.tsx
@@ -72,7 +74,7 @@ Cross-feature contracts:
 
 | Interaction | Data owner | Consumer needs | Mechanism |
 |---|---|---|---|
-| Application shows attached resume | Resumes | id and display name | Applications keeps a local `ResumeRef` list for the prototype; switch to Hira's exported list at Increment 10 if she publishes one |
+| Application shows attached resume | Resumes | id and display name | Records store a `resumeId` only. Where the names and the sample resume list come from is agreed with Hira before Increment 8; applications does not keep its own resume list |
 | Matching compares an application and a resume | Applications, Resumes | ids | Navigation with query parameters, agreed with Nicolas |
 | Analytics and follow-ups read applications | Applications | read-only records | `useApplications()` exported from the applications index, if Nikole needs live data |
 | Dashboard links to areas | Shell | route paths | Static links; no feature data in the shell initially |
@@ -99,7 +101,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 1 | 275 | Done 2026-10-16: Vite react-ts scaffold in `frontend/`, template demo removed, Prettier, Vitest, READMEs, four ADRs | install, build, lint, test, format check all pass; dev server shows heading | 1.5 h |
 | 2 | 275 | Done 2026-10-17: react-router 8.4, app shell with header and sidebar, dashboard, tokens and base styles, route table, not-found page, a placeholder page in each feature folder, DESIGN.md | build, lint, 6 tests, format check pass; checked in headless Chrome at 1280 and 375 px wide, keyboard order and skip link | 2 h |
 | 2b | 275 | Done 2026-10-17: Mulish as the app typeface, vivid blue accent, pill navigation, rounded dashboard panel, short sidebar labels (ADR-0005) | build, lint, 6 tests, format check pass; every element renders in Mulish in Chrome; no overflow at 375 px | 1.5 h |
-| 3 | 276.1 | List with mock data, search, filter, sort, empty state | render and filter tests, manual | 3 h |
+| 3 | 276.1 | Done 2026-10-18: record types, six sample records, provider, Application Records list with search, status filter, sort, two empty states, placeholder routes for the other four screens; shared `.panel`, `.button`, `.field`, `.page-header`, `.empty-state` | build, lint, 13 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
 | 4 | 276.2 | Create form, validation, mock save, simulated failure | validation tests, create flow test | 3 h |
 | 5 | 276.3 | Details screen with resume, notes, contacts, links | render test | 1.5 h |
 | 6 | 276.4 | Edit form prefilled, save, cancel, failure | edit flow test, cancel leaves data unchanged | 2 h |

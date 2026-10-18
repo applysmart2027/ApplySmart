@@ -1,0 +1,53 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.toolbar .field:first-child {
+  flex: 1 1 16rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.records-table th,
+.records-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.records-table th {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-bottom: var(--border);
+}
+
+.records-table tbody tr + tr td {
+  border-top: var(--border);
+}
+
+.records-table td:first-child {
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 0 var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+}
+
+.row-actions a + a {
+  margin-left: var(--space-4);
+}

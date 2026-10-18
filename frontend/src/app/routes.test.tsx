@@ -1,10 +1,15 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { expect, test } from 'vitest';
+import { ApplicationsProvider } from '../features/applications';
 import { routes } from './routes';
 
 function renderAt(path: string) {
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />);
+  render(
+    <ApplicationsProvider>
+      <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
+    </ApplicationsProvider>,
+  );
 }
 
 function sidebar() {
