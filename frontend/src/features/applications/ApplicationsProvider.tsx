@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useReducer, type ReactNode } from 'react';
 import { sampleApplications } from './sampleData';
-import { ApplicationsContext } from './store';
+import { ApplicationsContext, applicationsReducer } from './store';
 import type { ApplicationRecord } from './types';
 
 export function ApplicationsProvider({
@@ -10,5 +10,6 @@ export function ApplicationsProvider({
   children: ReactNode;
   initialRecords?: ApplicationRecord[];
 }) {
-  return <ApplicationsContext value={initialRecords}>{children}</ApplicationsContext>;
+  const [records, dispatch] = useReducer(applicationsReducer, initialRecords);
+  return <ApplicationsContext value={{ records, dispatch }}>{children}</ApplicationsContext>;
 }

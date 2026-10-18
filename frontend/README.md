@@ -49,18 +49,20 @@ Vitest runs in a jsdom environment with React Testing Library. `src/setupTests.t
 
 ## Demo
 
-| Address                                                                        | What it shows                                                                                                                                                                 |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                                                                            | Dashboard with the four areas                                                                                                                                                 |
-| `/applications`                                                                | Application Records: six sample records with search, a status filter and sorting. Search for something that matches nothing, such as "astronaut", to see the no-matches state |
-| `/applications/new`, `/applications/app-1` and its `/edit` and `/delete` pages | A "not available yet" page until those screens are built                                                                                                                      |
-| `/resumes`, `/matching`, `/recommendations`                                    | Placeholder for each teammate's area                                                                                                                                          |
-| any other address                                                              | Page not found, with a link back to the dashboard                                                                                                                             |
+| Address                                                   | What it shows                                                                                                                                                                                                                                                                     |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                       | Dashboard with the four areas                                                                                                                                                                                                                                                     |
+| `/applications`                                           | Application Records: six sample records with search, a status filter and sorting. Search for something that matches nothing, such as "astronaut", to see the no-matches state                                                                                                     |
+| `/applications/new`                                       | Create Application Record. Save with the required fields empty to see field errors, type "careers page" as the posting URL to see the invalid-address message, or tick "Simulate a save failure" to see the failure message. A valid save returns to the list with the new record |
+| `/applications/app-1` and its `/edit` and `/delete` pages | A "not available yet" page until those screens are built                                                                                                                                                                                                                          |
+| `/resumes`, `/matching`, `/recommendations`               | Placeholder for each teammate's area                                                                                                                                                                                                                                              |
+| any other address                                         | Page not found, with a link back to the dashboard                                                                                                                                                                                                                                 |
 
 Press Tab on any page: the first stop is a "Skip to main content" link. Below 768 pixels wide the sidebar becomes a row of links above the page.
 
 ## Known limitations
 
-- Only the Application Records list is built. The create, details, edit and delete screens show a placeholder, and the other three areas arrive when their owners build them.
+- The list and create screens are built. The details, edit and delete screens show a placeholder, and the other three areas arrive when their owners build them.
+- The create form has no resume field yet. Choosing or uploading a resume arrives with the resume selection screen.
 - The "no records yet" state cannot be reached in the browser until records can be deleted. A test covers it.
 - Data will not survive a page refresh. This is by design for the Inception prototype.

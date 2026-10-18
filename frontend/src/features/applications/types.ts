@@ -10,6 +10,8 @@ export const APPLICATION_STATUSES = [
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 // Optional text fields hold an empty string when the student leaves them blank.
+export type ApplicationDraft = Omit<ApplicationRecord, 'id'>;
+
 export type ApplicationRecord = {
   id: string;
   jobTitle: string;

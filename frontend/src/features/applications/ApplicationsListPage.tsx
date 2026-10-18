@@ -29,7 +29,7 @@ const rowActions = [
 const dateFormat = new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeZone: 'UTC' });
 
 export function ApplicationsListPage() {
-  const records = useApplications();
+  const { records } = useApplications();
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState<SortKey>('deadline');

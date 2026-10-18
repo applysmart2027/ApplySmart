@@ -1,17 +1,6 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { ApplicationsProvider, applicationsRoutes } from '.';
-import type { ApplicationRecord } from './types';
-
-function renderList(initialRecords?: ApplicationRecord[]) {
-  const router = createMemoryRouter(applicationsRoutes, { initialEntries: ['/applications'] });
-  render(
-    <ApplicationsProvider initialRecords={initialRecords}>
-      <RouterProvider router={router} />
-    </ApplicationsProvider>,
-  );
-}
+import { renderAt } from './renderAt';
 
 function jobTitlesInTable() {
   return screen
@@ -21,7 +10,7 @@ function jobTitlesInTable() {
 }
 
 test('the table shows each sample record with its employer, status and deadline', () => {
-  renderList();
+  renderAt('/applications');
 
   const row = screen.getByRole('row', { name: /Software Developer/ });
   expect(within(row).getByText('Halvorsen Analytics')).toBeInTheDocument();
@@ -32,7 +21,7 @@ test('the table shows each sample record with its employer, status and deadline'
 });
 
 test('search matches the employer or the job title, ignoring case', () => {
-  renderList();
+  renderAt('/applications');
   const search = screen.getByRole('searchbox', { name: 'Search' });
 
   fireEvent.change(search, { target: { value: 'tamarack' } });
@@ -43,7 +32,7 @@ test('search matches the employer or the job title, ignoring case', () => {
 });
 
 test('the status filter shows only records with that status', () => {
-  renderList();
+  renderAt('/applications');
 
   fireEvent.change(screen.getByRole('combobox', { name: 'Status' }), {
     target: { value: 'Offer' },
@@ -53,7 +42,7 @@ test('the status filter shows only records with that status', () => {
 });
 
 test('records sort by soonest deadline by default and by employer on request', () => {
-  renderList();
+  renderAt('/applications');
 
   expect(jobTitlesInTable()).toEqual([
     'Front-end Developer Intern',
@@ -79,7 +68,7 @@ test('records sort by soonest deadline by default and by employer on request', (
 });
 
 test('a search with no matches says so and can be cleared', () => {
-  renderList();
+  renderAt('/applications');
 
   fireEvent.change(screen.getByRole('searchbox', { name: 'Search' }), {
     target: { value: 'astronaut' },
@@ -92,7 +81,7 @@ test('a search with no matches says so and can be cleared', () => {
 });
 
 test('with no records the page offers to create the first one', () => {
-  renderList([]);
+  renderAt('/applications', []);
 
   expect(screen.getByText('You have no application records yet.')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Create your first application' })).toHaveAttribute(
@@ -103,7 +92,7 @@ test('with no records the page offers to create the first one', () => {
 });
 
 test('each row links to that record and the page links to a new record', () => {
-  renderList();
+  renderAt('/applications');
   const record = 'Cloud Engineer at Lakeshore Transit Authority';
 
   expect(screen.getByRole('link', { name: `View ${record}` })).toHaveAttribute(

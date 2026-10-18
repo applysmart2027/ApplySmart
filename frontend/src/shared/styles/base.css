@@ -32,6 +32,7 @@ p {
 
 .field input,
 .field select,
+.field textarea,
 .button {
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
@@ -42,9 +43,31 @@ p {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   padding: var(--space-2) var(--space-4);
   font-weight: 400;
+}
+
+.field textarea {
+  border-radius: var(--radius-lg);
+  resize: vertical;
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.field-error {
+  font-weight: 500;
+  color: var(--color-danger);
+}
+
+.notice-error {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-lg);
+  background: var(--color-danger-soft);
 }
 
 .field {
@@ -104,6 +127,18 @@ p {
 .button-primary:hover {
   border-color: var(--color-accent-hover);
   background: var(--color-accent-hover);
+}
+
+/* Dashed so prototype-only controls, such as simulated failures, never read as part of the real interface. */
+.prototype-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 .page-intro {
