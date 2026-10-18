@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increment 1 built and verified; Increment 2 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 and 2 built and verified; Increment 3 awaiting approval.
 
 ## 1. Goals
 
@@ -25,7 +25,7 @@ Out of scope: backend APIs, persistence, authentication, cloud deployment, resum
 
 ## 4. Technical architecture
 
-Stack: React 19, TypeScript 6, Vite 8, react-router v7 (from Increment 2), plain CSS with custom properties. Dev tooling as scaffolded on 2026-10-16: oxlint (the Vite template's linter), Prettier, Vitest 5 with React Testing Library and jsdom. Decisions are recorded in `docs/adr/`.
+Stack: React 19, TypeScript 6, Vite 8, react-router 8.4 (latest release on 2026-10-17; the APIs used also exist in 7.x), plain CSS with custom properties. Dev tooling as scaffolded on 2026-10-16: oxlint (the Vite template's linter), Prettier, Vitest 5 with React Testing Library and jsdom. Decisions are recorded in `docs/adr/`.
 
 ```text
 frontend/                       (decision D1: folder name)
@@ -33,10 +33,13 @@ frontend/                       (decision D1: folder name)
   src/
     main.tsx
     app/
-      App.tsx                   router, providers, route tree
-      routes.tsx                one import per feature's public routes
-      AppShell.tsx              header, primary navigation, outlet
+      App.tsx                   creates the browser router; providers added in Increment 3
+      routes.tsx                shell route, dashboard, each feature's routes, not-found
+      areas.ts                  path, name and description of the four areas
+      AppShell.tsx              skip link, header, sidebar navigation, outlet
       DashboardPage.tsx         links to the four areas
+      PageNotFound.tsx          unknown addresses
+      app.css                   shell and dashboard styles
     features/
       applications/             Anthony, SCRUM-276
         index.ts                routes, ApplicationsProvider, useApplications
@@ -94,7 +97,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | # | Ticket | Objective | Verify | Est. (planning only) |
 |---|---|---|---|---|
 | 1 | 275 | Done 2026-10-16: Vite react-ts scaffold in `frontend/`, template demo removed, Prettier, Vitest, READMEs, four ADRs | install, build, lint, test, format check all pass; dev server shows heading | 1.5 h |
-| 2 | 275 | react-router, AppShell with header and sidebar, dashboard, tokens and base styles, route table, one placeholder page per teammate area, DESIGN.md | all five nav links resolve; build, lint, test | 2 h |
+| 2 | 275 | Done 2026-10-17: react-router 8.4, app shell with header and sidebar, dashboard, tokens and base styles, route table, not-found page, a placeholder page in each feature folder, DESIGN.md | build, lint, 6 tests, format check pass; checked in headless Chrome at 1280 and 375 px wide, keyboard order and skip link | 2 h |
 | 3 | 276.1 | List with mock data, search, filter, sort, empty state | render and filter tests, manual | 3 h |
 | 4 | 276.2 | Create form, validation, mock save, simulated failure | validation tests, create flow test | 3 h |
 | 5 | 276.3 | Details screen with resume, notes, contacts, links | render test | 1.5 h |
@@ -111,7 +114,7 @@ Each increment: explain files first, implement, verify, summarize, stop for appr
 ## 7. Decisions pending
 
 - D1 Resolved: app in `frontend/` of `applysmart2027/ApplySmart`.
-- D2 Resolved: React 19, TypeScript, Vite, react-router v7, plain CSS (ADR-0001, ADR-0002).
+- D2 Resolved: React 19, TypeScript, Vite, react-router 8, plain CSS (ADR-0001, ADR-0002). Version 8 replaced the planned 7 on 2026-10-17 because it was the current release and every API in use exists in both.
 - D3 Resolved: Vitest, React Testing Library, jest-dom, jsdom installed in Increment 1.
 - D4 Resolved: one placeholder page per teammate feature folder in Increment 2, approved by Anthony.
 - D5 Open: application status vocabulary from the Part II glossary. Applied as an assumption: Saved, Applied, Interview, Offer, Rejected, Withdrawn.
