@@ -29,8 +29,8 @@ export function submit(name: string) {
   fireEvent.click(screen.getByRole('button', { name }));
 }
 
-export function simulateFailure() {
+export function simulateFailure(action: 'save' | 'delete') {
   fireEvent.click(
-    screen.getByRole('checkbox', { name: 'Simulate a save failure (prototype only)' }),
+    screen.getByRole('checkbox', { name: `Simulate a ${action} failure (prototype only)` }),
   );
 }

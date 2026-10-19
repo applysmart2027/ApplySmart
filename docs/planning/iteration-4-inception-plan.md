@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 6 built and verified; Increment 7 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 7 built and verified; Increment 8 awaiting approval.
 
 ## 1. Goals
 
@@ -47,7 +47,6 @@ frontend/                       (decision D1: folder name)
         sampleData.ts           six hard-coded records
         store.ts                context, reducer, useApplications, useApplication(id)
         ApplicationsProvider.tsx  mounts the records once, above the router
-        NotBuiltYetPage.tsx     stands in for screens until their increment lands
         validation.ts           pure form rules
         format.ts               deadline formatting
         ApplicationsListPage.tsx
@@ -56,7 +55,7 @@ frontend/                       (decision D1: folder name)
         EditApplicationPage.tsx
         ApplicationDetailsPage.tsx
         RecordUnavailable.tsx   not found and access denied
-        DeleteApplicationPage.tsx  Increment 7
+        DeleteApplicationPage.tsx
         ResumeSelection.tsx     Increment 8, a step inside ApplicationForm
       resumes/                  Hira, SCRUM-277
       matching/                 Nicolas, SCRUM-278
@@ -107,7 +106,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 4 | 276.2 | Done 2026-10-18: Create Application Record form with field validation, focus on the first invalid field, a simulated save failure, and the reducer's first action; shared field error, notice and prototype-control styles | build, lint, 22 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
 | 5 | 276.3 | Done 2026-10-18: Application Record Details with every field and its empty wording, Back, Edit and Delete actions, Record Not Found for unknown ids and Access Denied for a reserved id; `formatDeadline` shared by list and details | build, lint, 29 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 2 h |
 | 6 | 276.4 | Done 2026-10-18: Edit Application Record, prefilled, with Cancel back to details, Save changes, the same validation and simulated failure as create; `ApplicationForm`, `useApplication`, `RecordUnavailable` and the shared `PageHeader` extracted for their second use | build, lint, 37 tests, format check pass; create tests unchanged after the extraction; checked in Chrome at 1280 and 375 px wide | 2.5 h |
-| 7 | 276.5 | Delete confirmation, confirm, cancel, failure | delete flow test | 1.5 h |
+| 7 | 276.5 | Done 2026-10-19: Delete Application Confirmation with Cancel back to details, a red Delete application button, the `removed` action, and a simulated delete failure with retry; the "no records yet" state is now reachable; the placeholder page is gone | build, lint, 44 tests, format check pass; checked in Chrome at 1280 and 375 px wide, including deleting every record | 1.5 h |
 | 8 | 276.6 | Resume selection step, sample resumes, mock file pick, attach, cancel | selection flow test | 2 h |
 | 9 | 276.7 | End-to-end workflow check, fixes, React and accessibility review | full suite, build, manual script | 2 h |
 | 10 | 280 | Integrate teammate modules, resolve contracts | every route renders | depends on team |

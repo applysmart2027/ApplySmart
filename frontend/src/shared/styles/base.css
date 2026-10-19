@@ -130,13 +130,24 @@ p {
 
 .button-primary {
   border-color: var(--color-accent);
-  color: var(--color-on-accent);
+  color: var(--color-on-solid);
   background: var(--color-accent);
 }
 
 .button-primary:hover {
   border-color: var(--color-accent-hover);
   background: var(--color-accent-hover);
+}
+
+.button-danger {
+  border-color: var(--color-danger);
+  color: var(--color-on-solid);
+  background: var(--color-danger);
+}
+
+.button-danger:hover {
+  border-color: var(--color-danger-hover);
+  background: var(--color-danger-hover);
 }
 
 /* Dashed so prototype-only controls, such as simulated failures, never read as part of the real interface. */

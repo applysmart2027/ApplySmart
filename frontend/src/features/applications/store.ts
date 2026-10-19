@@ -2,7 +2,8 @@ import { createContext, useContext, type Dispatch } from 'react';
 import { restrictedApplicationId } from './sampleData';
 import type { ApplicationRecord } from './types';
 
-type ApplicationsAction = { type: 'created' | 'updated'; record: ApplicationRecord };
+type ApplicationsAction =
+  { type: 'created' | 'updated'; record: ApplicationRecord } | { type: 'removed'; id: string };
 
 export function applicationsReducer(
   records: ApplicationRecord[],
@@ -13,6 +14,8 @@ export function applicationsReducer(
       return [...records, action.record];
     case 'updated':
       return records.map((r) => (r.id === action.record.id ? action.record : r));
+    case 'removed':
+      return records.filter((r) => r.id !== action.id);
   }
 }
 

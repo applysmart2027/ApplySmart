@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
-import { formatDeadline } from './format';
+import { describeApplication, formatDeadline } from './format';
 import { useApplications } from './store';
 import { APPLICATION_STATUSES, type ApplicationRecord } from './types';
 import './applications.css';
@@ -115,7 +115,7 @@ export function ApplicationsListPage() {
                 </thead>
                 <tbody>
                   {visible.map((r) => {
-                    const record = `${r.jobTitle} at ${r.employer}`;
+                    const record = describeApplication(r);
                     return (
                       <tr key={r.id}>
                         <td>{r.jobTitle}</td>

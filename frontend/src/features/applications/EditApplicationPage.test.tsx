@@ -70,7 +70,7 @@ test('clearing a required field explains it and keeps the student on the form', 
 test('a simulated failure keeps the edits and leaves the record unchanged', () => {
   renderAt('/applications/app-1/edit');
   fill('Job title (required)', 'Senior Software Developer');
-  simulateFailure();
+  simulateFailure('save');
 
   submit('Save changes');
 

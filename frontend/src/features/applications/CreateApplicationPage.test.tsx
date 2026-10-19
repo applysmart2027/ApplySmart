@@ -68,7 +68,7 @@ test('a simulated save failure keeps the entries and creates nothing', () => {
   renderAt('/applications/new');
   fill('Job title (required)', 'Data Engineer');
   fill('Employer (required)', 'Maplestone Robotics');
-  simulateFailure();
+  simulateFailure('save');
 
   submit('Save application');
 
@@ -76,7 +76,7 @@ test('a simulated save failure keeps the entries and creates nothing', () => {
   expect(screen.getByLabelText('Job title (required)')).toHaveValue('Data Engineer');
   expect(heading()).toHaveTextContent('Create Application Record');
 
-  simulateFailure();
+  simulateFailure('save');
   submit('Save application');
 
   expect(heading()).toHaveTextContent('Application Records');

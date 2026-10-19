@@ -10,7 +10,7 @@ Job Discovery and Application Tracking. Owner: Anthony Vydysh (SCRUM-276).
 | `/applications/new`        | Create Application Record form                                    |
 | `/applications/:id`        | Application Record Details, or Not Found and Access Denied states |
 | `/applications/:id/edit`   | Edit Application Record form                                      |
-| `/applications/:id/delete` | Placeholder until the screen is built                             |
+| `/applications/:id/delete` | Delete Application Confirmation |
 
 ## Public surface
 
@@ -27,4 +27,4 @@ No other feature imports from this folder yet. If one needs application records,
 
 ## Tests
 
-Each screen has a `.test.tsx` file next to it, and `validation.test.ts` covers the rules. Page tests use `test-utils.tsx`: `renderAt(path)` renders this folder's routes inside a fresh provider, and `fill`, `submit`, `simulateFailure`, `detail` and `heading` cover the common steps. Run them with `npm test` from `frontend/`.
+Each screen has a `.test.tsx` file next to it, and `validation.test.ts` covers the rules. Page tests use `test-utils.tsx`: `renderAt(path)` renders this folder's routes inside a fresh provider, and `fill`, `submit`, `simulateFailure('save' or 'delete')`, `detail` and `heading` cover the common steps. Run them with `npm test` from `frontend/`.

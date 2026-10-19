@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
 import { ApplicationForm } from './ApplicationForm';
+import { describeApplication } from './format';
 import { RecordUnavailable } from './RecordUnavailable';
 import { useApplication, useApplications } from './store';
 import './applications.css';
@@ -16,10 +17,7 @@ export function EditApplicationPage() {
   const detailsPath = `/applications/${record.id}`;
   return (
     <>
-      <PageHeader
-        title="Edit Application Record"
-        subtitle={`${record.jobTitle} at ${record.employer}`}
-      />
+      <PageHeader title="Edit Application Record" subtitle={describeApplication(record)} />
       <ApplicationForm
         initialDraft={record}
         submitLabel="Save changes"

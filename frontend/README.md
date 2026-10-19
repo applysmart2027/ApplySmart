@@ -58,7 +58,7 @@ Vitest runs in a jsdom environment with React Testing Library. `src/setupTests.t
 | `/applications/app-999`                     | Application not found                                                                                                                                                                                                                                                             |
 | `/applications/app-restricted`              | Access denied, standing in for another student's record                                                                                                                                                                                                                           |
 | `/applications/app-1/edit`                  | Edit Application Record, prefilled. Cancel discards changes; Save changes returns to the details with the new values. The same field errors and "Simulate a save failure" checkbox work as on create                                                                              |
-| `/applications/app-1/delete`                | A "not available yet" page until that screen is built                                                                                                                                                                                                                             |
+| `/applications/app-1/delete` | Delete Application Confirmation. Cancel keeps the record; Delete application removes it and returns to the list. Tick "Simulate a delete failure" to see the failure message, then untick it and press Delete application again to retry. Delete all six records to see the "no records yet" state |
 | `/resumes`, `/matching`, `/recommendations` | Placeholder for each teammate's area                                                                                                                                                                                                                                              |
 | any other address                           | Page not found, with a link back to the dashboard                                                                                                                                                                                                                                 |
 
@@ -66,7 +66,6 @@ Press Tab on any page: the first stop is a "Skip to main content" link. Below 76
 
 ## Known limitations
 
-- The list, create, details and edit screens are built. The delete screen shows a placeholder, and the other three areas arrive when their owners build them.
+- All five application record screens are built. The other three areas arrive when their owners build them.
 - The create and edit forms have no resume field yet. Choosing or uploading a resume arrives with the resume selection screen.
-- The "no records yet" state cannot be reached in the browser until records can be deleted. A test covers it.
 - Data will not survive a page refresh. This is by design for the Inception prototype.

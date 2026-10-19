@@ -52,7 +52,8 @@
   margin-left: var(--space-4);
 }
 
-.application-form {
+.application-form,
+.delete-confirmation {
   display: grid;
   gap: var(--space-6);
   max-width: 40rem;
@@ -133,4 +134,13 @@
   .details-list > div {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.delete-confirmation {
+  gap: var(--space-4);
+}
+
+.delete-question {
+  font-size: var(--text-lg);
+  font-weight: 600;
 }
