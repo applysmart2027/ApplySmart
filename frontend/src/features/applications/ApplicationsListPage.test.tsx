@@ -1,6 +1,6 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { renderAt } from './renderAt';
+import { renderAt } from './test-utils';
 
 function jobTitlesInTable() {
   return screen

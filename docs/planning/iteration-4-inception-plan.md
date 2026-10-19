@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 4 built and verified; Increment 5 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 5 built and verified; Increment 6 awaiting approval.
 
 ## 1. Goals
 
@@ -74,7 +74,7 @@ Cross-feature contracts:
 
 | Interaction | Data owner | Consumer needs | Mechanism |
 |---|---|---|---|
-| Application shows attached resume | Resumes | id and display name | Records store a `resumeId` only. Where the names and the sample resume list come from is agreed with Hira before Increment 8; applications does not keep its own resume list |
+| Application shows attached resume | Resumes | id and display name | Records store `resumeId` and a `resumeName` snapshot, decided 2026-10-18, so the details screen needs no resume module. Where the list of resumes to choose from comes from is agreed with Hira before Increment 8; applications does not keep its own resume list |
 | Matching compares an application and a resume | Applications, Resumes | ids | Navigation with query parameters, agreed with Nicolas |
 | Analytics and follow-ups read applications | Applications | read-only records | `useApplications()` exported from the applications index, if Nikole needs live data |
 | Dashboard links to areas | Shell | route paths | Static links; no feature data in the shell initially |
@@ -103,7 +103,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 2b | 275 | Done 2026-10-17: Mulish as the app typeface, vivid blue accent, pill navigation, rounded dashboard panel, short sidebar labels (ADR-0005) | build, lint, 6 tests, format check pass; every element renders in Mulish in Chrome; no overflow at 375 px | 1.5 h |
 | 3 | 276.1 | Done 2026-10-18: record types, six sample records, provider, Application Records list with search, status filter, sort, two empty states, placeholder routes for the other four screens; shared `.panel`, `.button`, `.field`, `.page-header`, `.empty-state` | build, lint, 13 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
 | 4 | 276.2 | Done 2026-10-18: Create Application Record form with field validation, focus on the first invalid field, a simulated save failure, and the reducer's first action; shared field error, notice and prototype-control styles | build, lint, 22 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
-| 5 | 276.3 | Details screen with resume, notes, contacts, links | render test | 1.5 h |
+| 5 | 276.3 | Done 2026-10-18: Application Record Details with every field and its empty wording, Back, Edit and Delete actions, Record Not Found for unknown ids and Access Denied for a reserved id; `formatDeadline` shared by list and details | build, lint, 29 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 2 h |
 | 6 | 276.4 | Edit form prefilled, save, cancel, failure | edit flow test, cancel leaves data unchanged | 2 h |
 | 7 | 276.5 | Delete confirmation, confirm, cancel, failure | delete flow test | 1.5 h |
 | 8 | 276.6 | Resume selection step, sample resumes, mock file pick, attach, cancel | selection flow test | 2 h |

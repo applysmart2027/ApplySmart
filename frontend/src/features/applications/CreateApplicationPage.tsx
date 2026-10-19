@@ -12,6 +12,7 @@ const emptyDraft: ApplicationDraft = {
   status: 'Saved',
   deadline: '',
   resumeId: '',
+  resumeName: '',
   notes: '',
   contactName: '',
   contactEmail: '',
@@ -106,7 +107,7 @@ export function CreateApplicationPage() {
           Simulate a save failure (prototype only)
         </label>
 
-        <div className="application-form-actions">
+        <div className="application-actions">
           <Link to="/applications" className="button">
             Cancel
           </Link>

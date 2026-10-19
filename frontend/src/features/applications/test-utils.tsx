@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ApplicationsProvider, applicationsRoutes } from '.';
 import type { ApplicationRecord } from './types';
@@ -11,4 +11,8 @@ export function renderAt(path: string, initialRecords?: ApplicationRecord[]) {
       <RouterProvider router={router} />
     </ApplicationsProvider>,
   );
+}
+
+export function heading() {
+  return screen.getByRole('heading', { level: 1 });
 }

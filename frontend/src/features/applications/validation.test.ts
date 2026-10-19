@@ -9,6 +9,7 @@ const complete: ApplicationDraft = {
   status: 'Saved',
   deadline: '',
   resumeId: '',
+  resumeName: '',
   notes: '',
   contactName: '',
   contactEmail: '',

@@ -1,5 +1,8 @@
 import type { ApplicationRecord } from './types';
 
+// Prototype stand-in for a record that belongs to another student, used to show Access Denied.
+export const restrictedApplicationId = 'app-restricted';
+
 export const sampleApplications: ApplicationRecord[] = [
   {
     id: 'app-1',
@@ -9,6 +12,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Applied',
     deadline: '2026-11-14',
     resumeId: 'res-1',
+    resumeName: 'Software resume, September 2026.pdf',
     notes:
       'Applied through the company site. A coding assessment link should arrive within a week.',
     contactName: 'Priya Raman',
@@ -22,6 +26,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Interview',
     deadline: '2026-10-30',
     resumeId: 'res-2',
+    resumeName: 'Cloud and DevOps resume.docx',
     notes: 'First interview on October 27 at 2:30 pm, video call with the platform team.',
     contactName: 'Marcus Okafor',
     contactEmail: 'm.okafor@lakeshoretransit.example',
@@ -34,6 +39,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Saved',
     deadline: '2026-12-05',
     resumeId: '',
+    resumeName: '',
     notes: '',
     contactName: '',
     contactEmail: '',
@@ -46,6 +52,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Offer',
     deadline: '2026-09-26',
     resumeId: 'res-3',
+    resumeName: 'General co-op resume.pdf',
     notes: 'Offer received October 9. Reply due October 23.',
     contactName: 'Elena Sokolova',
     contactEmail: 'elena.sokolova@kestrelmobility.example',
@@ -58,6 +65,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Rejected',
     deadline: '2026-09-12',
     resumeId: 'res-1',
+    resumeName: 'Software resume, September 2026.pdf',
     notes: 'Rejection email on October 2. Feedback asked for more React portfolio work.',
     contactName: '',
     contactEmail: '',
@@ -70,6 +78,7 @@ export const sampleApplications: ApplicationRecord[] = [
     status: 'Withdrawn',
     deadline: '',
     resumeId: 'res-3',
+    resumeName: 'General co-op resume.pdf',
     notes: 'Withdrew after accepting an interview at Lakeshore Transit Authority.',
     contactName: '',
     contactEmail: '',

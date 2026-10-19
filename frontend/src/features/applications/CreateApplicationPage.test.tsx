@@ -1,6 +1,6 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { renderAt } from './renderAt';
+import { heading, renderAt } from './test-utils';
 
 function fill(label: string, value: string) {
   fireEvent.change(screen.getByLabelText(label), { target: { value } });
@@ -8,10 +8,6 @@ function fill(label: string, value: string) {
 
 function save() {
   fireEvent.click(screen.getByRole('button', { name: 'Save application' }));
-}
-
-function heading() {
-  return screen.getByRole('heading', { level: 1 });
 }
 
 test('cancel returns to the list without adding a record', () => {

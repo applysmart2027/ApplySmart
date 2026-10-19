@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { formatDeadline } from './format';
 import { useApplications } from './store';
 import { APPLICATION_STATUSES, type ApplicationRecord } from './types';
 import './applications.css';
@@ -23,10 +24,6 @@ const rowActions = [
   ['Edit', '/edit'],
   ['Delete', '/delete'],
 ];
-
-// Deadlines are calendar dates parsed as UTC midnight; formatting in UTC keeps them from
-// showing a day early in time zones west of UTC.
-const dateFormat = new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeZone: 'UTC' });
 
 export function ApplicationsListPage() {
   const { records } = useApplications();
@@ -126,9 +123,7 @@ export function ApplicationsListPage() {
                         <td>
                           <span className="status">{r.status}</span>
                         </td>
-                        <td>
-                          {r.deadline ? dateFormat.format(new Date(r.deadline)) : 'No deadline'}
-                        </td>
+                        <td>{formatDeadline(r.deadline)}</td>
                         <td className="row-actions">
                           {rowActions.map(([verb, suffix]) => (
                             <Link

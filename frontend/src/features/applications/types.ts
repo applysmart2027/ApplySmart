@@ -20,6 +20,7 @@ export type ApplicationRecord = {
   status: ApplicationStatus;
   deadline: string; // YYYY-MM-DD
   resumeId: string;
+  resumeName: string;
   notes: string;
   contactName: string;
   contactEmail: string;
