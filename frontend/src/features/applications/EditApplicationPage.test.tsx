@@ -67,6 +67,20 @@ test('clearing a required field explains it and keeps the student on the form', 
   expect(heading()).toHaveTextContent('Edit Application Record');
 });
 
+test('an invalid posting URL is explained and focused', () => {
+  renderAt('/applications/app-1/edit');
+  fill('Job posting URL', 'halvorsen careers page');
+
+  submit('Save changes');
+
+  const postingUrl = screen.getByLabelText('Job posting URL');
+  expect(postingUrl).toHaveFocus();
+  expect(postingUrl).toHaveAccessibleDescription(
+    'Enter a full web address starting with https://, or leave this blank.',
+  );
+  expect(heading()).toHaveTextContent('Edit Application Record');
+});
+
 test('a simulated failure keeps the edits and leaves the record unchanged', () => {
   renderAt('/applications/app-1/edit');
   fill('Job title (required)', 'Senior Software Developer');

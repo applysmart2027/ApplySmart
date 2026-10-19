@@ -45,3 +45,49 @@ test('an unknown address shows page not found and links back to the dashboard', 
   fireEvent.click(screen.getByRole('link', { name: 'Go to the dashboard' }));
   expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument();
 });
+
+test('a student creates, views, edits and deletes an application from the dashboard', () => {
+  renderAt('/');
+  const click = (role: 'link' | 'button' | 'radio', name: string) =>
+    fireEvent.click(screen.getByRole(role, { name }));
+  const fill = (label: string, value: string) =>
+    fireEvent.change(screen.getByLabelText(label), { target: { value } });
+  const detail = (term: string) =>
+    screen.getByText(term, { selector: 'dt' }).nextElementSibling as HTMLElement;
+  const heading = () => screen.getByRole('heading', { level: 1 });
+
+  click('link', 'Applications');
+  click('link', 'New application');
+  expect(heading()).toHaveTextContent('Create Application Record');
+
+  fill('Job title (required)', 'Data Engineer');
+  fill('Employer (required)', 'Maplestone Robotics');
+  click('button', 'Select or upload resume');
+  click('radio', 'Cloud and DevOps resume.docx');
+  click('button', 'Attach resume');
+  click('button', 'Save application');
+  expect(heading()).toHaveTextContent('Application Records');
+
+  click('link', 'View Data Engineer at Maplestone Robotics');
+  expect(heading().textContent).toBe('Data Engineer');
+  expect(detail('Resume')).toHaveTextContent('Cloud and DevOps resume.docx');
+
+  click('link', 'Edit application');
+  fill('Status', 'Interview');
+  click('button', 'Change resume');
+  fireEvent.change(screen.getByLabelText('Upload a new resume (PDF or DOCX)'), {
+    target: { files: [new File(['resume'], 'cover-resume.pdf')] },
+  });
+  click('button', 'Attach resume');
+  click('button', 'Save changes');
+  expect(heading().textContent).toBe('Data Engineer');
+  expect(detail('Status')).toHaveTextContent('Interview');
+  expect(detail('Resume')).toHaveTextContent('cover-resume.pdf');
+
+  click('link', 'Delete application');
+  expect(heading()).toHaveTextContent('Delete Application Record');
+  click('button', 'Delete application');
+  expect(heading()).toHaveTextContent('Application Records');
+  expect(screen.getAllByRole('row')).toHaveLength(7);
+  expect(screen.queryByText('Data Engineer')).not.toBeInTheDocument();
+});

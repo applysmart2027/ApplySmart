@@ -43,6 +43,18 @@ test('cancel returns to the form with the previous resume and the typed values',
   expect(screen.getByLabelText('Job title (required)')).toHaveValue('Senior Software Developer');
 });
 
+test('cancel on create returns to the form with nothing attached', () => {
+  renderAt('/applications/new');
+  fill('Job title (required)', 'Data Engineer');
+
+  submit('Select or upload resume');
+  choose('General co-op resume.pdf');
+  submit('Cancel');
+
+  expect(screen.getByText('No resume attached')).toBeInTheDocument();
+  expect(screen.getByLabelText('Job title (required)')).toHaveValue('Data Engineer');
+});
+
 test('on edit, the current resume is preselected and a new one is saved', () => {
   renderAt('/applications/app-1/edit');
 

@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 8 built and verified; Increment 9 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 8 built and verified; Increment 9 tests and documents done, review findings awaiting approval.
 
 ## 1. Goals
 
@@ -109,7 +109,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 6 | 276.4 | Done 2026-10-18: Edit Application Record, prefilled, with Cancel back to details, Save changes, the same validation and simulated failure as create; `ApplicationForm`, `useApplication`, `RecordUnavailable` and the shared `PageHeader` extracted for their second use | build, lint, 37 tests, format check pass; create tests unchanged after the extraction; checked in Chrome at 1280 and 375 px wide | 2.5 h |
 | 7 | 276.5 | Done 2026-10-19: Delete Application Confirmation with Cancel back to details, a red Delete application button, the `removed` action, and a simulated delete failure with retry; the "no records yet" state is now reachable; the placeholder page is gone | build, lint, 44 tests, format check pass; checked in Chrome at 1280 and 375 px wide, including deleting every record | 1.5 h |
 | 8 | 276.6 | Done 2026-10-19: Resume Upload and Selection as a step inside the create and edit forms: three stand-in sample resumes, a PDF or DOCX picker that keeps only the file name, Attach and Cancel, typed values preserved, focus moved into the step and back; `.field` and the form panels now let wide controls shrink on phones | build, lint, 50 tests, format check pass; checked in Chrome at 1280 and 375 px wide with real PDF and PNG files | 2.5 h |
-| 9 | 276.7 | End-to-end workflow check, fixes, React and accessibility review | full suite, build, manual script | 2 h |
+| 9 | 276.7 | Tests and documents done 2026-10-19: end-to-end workflow test through the shell, the three missing coverage cases, the coverage table above, and the README demo script; review findings reported for approval | build, lint, 53 tests, format check pass; demo script followed in Chrome | 2.5 h |
 | 10 | 280 | Integrate teammate modules, resolve contracts | every route renders | depends on team |
 | 11 | 280 | Quality gate: /code-review, /simplify, antislop Delivery Gate, accessibility | reports, fixes | 2 h |
 | 12 | 280 | Demo readiness: README, known limitations, Jira updates identified | fresh clone runs | 1 h |
@@ -130,6 +130,46 @@ Each increment: explain files first, implement, verify, summarize, stop for appr
 ## 8. Verification strategy
 
 Per increment: `npm run build`, `npm run lint`, `npm test`, manual click-through of the affected screens. Per screen: renders, navigation works, mock data visible, interactions behave, invalid input gives feedback, cancel changes nothing, actions hit the right record, no backend needed, earlier screens still work.
+
+### Wireflow and UI state coverage
+
+Every transition in section 10 and every state in section 12 of the UI specification, with the test that proves it. Test names are shortened; files are under `frontend/src/`. Checked on 2026-10-19 against 53 passing tests.
+
+| Specification item | Proven by |
+|---|---|
+| List, New application, to Create | `app/routes.test.tsx`: a student creates, views, edits and deletes an application |
+| Create, Cancel, to List | `CreateApplicationPage.test.tsx`: cancel returns to the list without adding a record |
+| Create, Save (success), to List | `CreateApplicationPage.test.tsx`: a valid save returns to the list and shows the new record |
+| List, View, to Details | `ApplicationDetailsPage.test.tsx`: View in the list opens the details of that row |
+| Details, Back, to List | `ApplicationDetailsPage.test.tsx`: the actions lead to edit, delete and back to the list |
+| Details, Edit, to Edit | `EditApplicationPage.test.tsx`: Edit application on the details screen opens that record |
+| Edit, Cancel, to Details | `EditApplicationPage.test.tsx`: cancel returns to the details without saving the edits |
+| Edit, Save (success), to Details | `EditApplicationPage.test.tsx`: saving shows the changes on the details screen |
+| Details, Delete, to Delete confirmation | `DeleteApplicationPage.test.tsx`: Delete application on the details screen opens the confirmation |
+| Delete, Cancel, to Details | `DeleteApplicationPage.test.tsx`: cancel returns to the details and keeps the record |
+| Delete, Confirm (success), to List | `DeleteApplicationPage.test.tsx`: confirming removes the record and returns to the list |
+| Create, Select or upload resume, to Resume step | `ResumeSelection.test.tsx`: on create, a chosen resume is attached |
+| Resume step, Cancel, to Create | `ResumeSelection.test.tsx`: cancel on create returns to the form with nothing attached |
+| Resume step, Attach, to Create | `ResumeSelection.test.tsx`: on create, a chosen resume is attached |
+| Edit, Change resume, to Resume step | `ResumeSelection.test.tsx`: on edit, the current resume is preselected |
+| Resume step, Cancel, to Edit | `ResumeSelection.test.tsx`: cancel returns to the form with the previous resume |
+| Resume step, Attach, to Edit | `ResumeSelection.test.tsx`: on edit, the current resume is preselected and a new one is saved |
+| List: normal | `ApplicationsListPage.test.tsx`: the table shows each sample record |
+| List: empty | `ApplicationsListPage.test.tsx`: with no records the page offers to create the first one |
+| List: record not found | `ApplicationDetailsPage.test.tsx`: an unknown address shows that the record was not found |
+| List: access denied | `ApplicationDetailsPage.test.tsx`: another student's record shows access denied |
+| Create: initial form | `CreateApplicationPage.test.tsx`: saving without the required fields shows both messages |
+| Create: missing required fields | `CreateApplicationPage.test.tsx`: saving without the required fields shows both messages |
+| Create: invalid information | `CreateApplicationPage.test.tsx`: an invalid URL and email are explained |
+| Create: save failure | `CreateApplicationPage.test.tsx`: a simulated save failure keeps the entries |
+| Edit: initial prefilled form | `EditApplicationPage.test.tsx`: the form is prefilled with every field of the record |
+| Edit: missing required fields | `EditApplicationPage.test.tsx`: clearing a required field explains it |
+| Edit: invalid information | `EditApplicationPage.test.tsx`: an invalid posting URL is explained and focused |
+| Edit: save failure | `EditApplicationPage.test.tsx`: a simulated failure keeps the edits |
+| Delete: initial confirmation | `DeleteApplicationPage.test.tsx`: Delete application on the details screen opens the confirmation |
+| Delete: delete failure | `DeleteApplicationPage.test.tsx`: a simulated failure keeps the record and the retry succeeds |
+
+The end-to-end test in `app/routes.test.tsx` also walks 11 of the 17 transitions in one session, through the shell, starting from the dashboard.
 
 ## 9. Integration strategy
 
