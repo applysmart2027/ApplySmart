@@ -1,10 +1,6 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { heading, renderAt } from './test-utils';
-
-function detail(term: string) {
-  return screen.getByText(term, { selector: 'dt' }).nextElementSibling as HTMLElement;
-}
+import { detail, heading, renderAt } from './test-utils';
 
 test('the details show every field of the selected record', () => {
   renderAt('/applications/app-1');

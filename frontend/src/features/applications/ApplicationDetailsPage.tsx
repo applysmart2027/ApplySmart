@@ -1,50 +1,28 @@
 import { Link, useParams } from 'react-router';
+import { PageHeader } from '../../shared/ui/PageHeader';
 import { formatDeadline } from './format';
-import { restrictedApplicationId } from './sampleData';
-import { useApplications } from './store';
+import { RecordUnavailable } from './RecordUnavailable';
+import { useApplication } from './store';
 import './applications.css';
 
 export function ApplicationDetailsPage() {
   const { id } = useParams();
-  const { records } = useApplications();
-  const record = records.find((r) => r.id === id);
-
-  if (id === restrictedApplicationId) {
-    return (
-      <Unavailable
-        title="You cannot view this application"
-        text="This record belongs to another account. Open one of your own applications instead."
-      />
-    );
-  }
-  if (!record) {
-    return (
-      <Unavailable
-        title="Application not found"
-        text="There is no application record at this address. It may have been deleted."
-      />
-    );
-  }
+  const record = useApplication(id);
+  if (typeof record === 'string') return <RecordUnavailable reason={record} />;
 
   return (
     <>
       <Link to="/applications" className="text-link details-back">
         Back to Application Records
       </Link>
-      <div className="page-header">
-        <div className="details-heading">
-          <h1>{record.jobTitle}</h1>
-          <p className="page-intro">{record.employer}</p>
-        </div>
-        <div className="application-actions">
-          <Link to={`/applications/${record.id}/edit`} className="button button-primary">
-            Edit application
-          </Link>
-          <Link to={`/applications/${record.id}/delete`} className="button">
-            Delete application
-          </Link>
-        </div>
-      </div>
+      <PageHeader title={record.jobTitle} subtitle={record.employer}>
+        <Link to={`/applications/${record.id}/edit`} className="button button-primary">
+          Edit application
+        </Link>
+        <Link to={`/applications/${record.id}/delete`} className="button">
+          Delete application
+        </Link>
+      </PageHeader>
 
       <dl className="panel details-list">
         <div>
@@ -90,20 +68,6 @@ export function ApplicationDetailsPage() {
           <dd>{record.notes || 'No notes'}</dd>
         </div>
       </dl>
-    </>
-  );
-}
-
-function Unavailable({ title, text }: { title: string; text: string }) {
-  return (
-    <>
-      <h1>{title}</h1>
-      <p className="page-intro">
-        {text}{' '}
-        <Link to="/applications" className="text-link">
-          Back to Application Records
-        </Link>
-      </p>
     </>
   );
 }

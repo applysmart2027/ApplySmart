@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { PageHeader } from '../../shared/ui/PageHeader';
 import { formatDeadline } from './format';
 import { useApplications } from './store';
 import { APPLICATION_STATUSES, type ApplicationRecord } from './types';
@@ -47,12 +48,11 @@ export function ApplicationsListPage() {
 
   return (
     <>
-      <div className="page-header">
-        <h1>Application Records</h1>
+      <PageHeader title="Application Records">
         <Link to="/applications/new" className="button button-primary">
           New application
         </Link>
-      </div>
+      </PageHeader>
 
       {records.length === 0 ? (
         <div className="panel empty-state">

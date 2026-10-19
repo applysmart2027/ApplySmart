@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 5 built and verified; Increment 6 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 6 built and verified; Increment 7 awaiting approval.
 
 ## 1. Goals
 
@@ -45,22 +45,24 @@ frontend/                       (decision D1: folder name)
         index.ts                routes and ApplicationsProvider
         types.ts                ApplicationRecord, ApplicationStatus, APPLICATION_STATUSES
         sampleData.ts           six hard-coded records
-        store.ts                context and useApplications; the reducer joins in Increment 4
+        store.ts                context, reducer, useApplications, useApplication(id)
         ApplicationsProvider.tsx  mounts the records once, above the router
         NotBuiltYetPage.tsx     stands in for screens until their increment lands
         validation.ts           pure form rules
-        routes.tsx
+        format.ts               deadline formatting
         ApplicationsListPage.tsx
-        ApplicationFormPage.tsx create and edit
-        ApplicationForm.tsx
-        ResumeSelection.tsx     screen 6, rendered inside the form page
+        ApplicationForm.tsx     the form behind create and edit
+        CreateApplicationPage.tsx
+        EditApplicationPage.tsx
         ApplicationDetailsPage.tsx
-        DeleteApplicationPage.tsx
+        RecordUnavailable.tsx   not found and access denied
+        DeleteApplicationPage.tsx  Increment 7
+        ResumeSelection.tsx     Increment 8, a step inside ApplicationForm
       resumes/                  Hira, SCRUM-277
       matching/                 Nicolas, SCRUM-278
       recommendations/          Nikole, SCRUM-279
     shared/
-      ui/                       Button, Field, PageHeader, EmptyState
+      ui/PageHeader.tsx         title, subtitle and actions for every page
       styles/tokens.css, base.css
 ```
 
@@ -104,7 +106,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 3 | 276.1 | Done 2026-10-18: record types, six sample records, provider, Application Records list with search, status filter, sort, two empty states, placeholder routes for the other four screens; shared `.panel`, `.button`, `.field`, `.page-header`, `.empty-state` | build, lint, 13 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
 | 4 | 276.2 | Done 2026-10-18: Create Application Record form with field validation, focus on the first invalid field, a simulated save failure, and the reducer's first action; shared field error, notice and prototype-control styles | build, lint, 22 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 3 h |
 | 5 | 276.3 | Done 2026-10-18: Application Record Details with every field and its empty wording, Back, Edit and Delete actions, Record Not Found for unknown ids and Access Denied for a reserved id; `formatDeadline` shared by list and details | build, lint, 29 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 2 h |
-| 6 | 276.4 | Edit form prefilled, save, cancel, failure | edit flow test, cancel leaves data unchanged | 2 h |
+| 6 | 276.4 | Done 2026-10-18: Edit Application Record, prefilled, with Cancel back to details, Save changes, the same validation and simulated failure as create; `ApplicationForm`, `useApplication`, `RecordUnavailable` and the shared `PageHeader` extracted for their second use | build, lint, 37 tests, format check pass; create tests unchanged after the extraction; checked in Chrome at 1280 and 375 px wide | 2.5 h |
 | 7 | 276.5 | Delete confirmation, confirm, cancel, failure | delete flow test | 1.5 h |
 | 8 | 276.6 | Resume selection step, sample resumes, mock file pick, attach, cancel | selection flow test | 2 h |
 | 9 | 276.7 | End-to-end workflow check, fixes, React and accessibility review | full suite, build, manual script | 2 h |

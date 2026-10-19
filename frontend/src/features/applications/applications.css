@@ -89,10 +89,6 @@
   font-size: var(--text-sm);
 }
 
-.details-heading .page-intro {
-  margin-top: var(--space-1);
-}
-
 .details-list {
   margin: 0;
   padding: var(--space-2) var(--space-6);
