@@ -70,8 +70,10 @@ p {
   background: var(--color-danger-soft);
 }
 
+/* minmax(0, 1fr) lets wide controls, such as file inputs, shrink to the column on narrow screens. */
 .field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
   font-size: var(--text-sm);
   font-weight: 600;

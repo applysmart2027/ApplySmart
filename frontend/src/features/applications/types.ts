@@ -25,3 +25,8 @@ export type ApplicationRecord = {
   contactName: string;
   contactEmail: string;
 };
+
+export type ResumeRef = {
+  id: string;
+  name: string;
+};

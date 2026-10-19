@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 7 built and verified; Increment 8 awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 8 built and verified; Increment 9 awaiting approval.
 
 ## 1. Goals
 
@@ -56,7 +56,8 @@ frontend/                       (decision D1: folder name)
         ApplicationDetailsPage.tsx
         RecordUnavailable.tsx   not found and access denied
         DeleteApplicationPage.tsx
-        ResumeSelection.tsx     Increment 8, a step inside ApplicationForm
+        ResumeSelection.tsx     the resume step shown inside ApplicationForm
+        TextField.tsx           labelled input with its error wiring
       resumes/                  Hira, SCRUM-277
       matching/                 Nicolas, SCRUM-278
       recommendations/          Nikole, SCRUM-279
@@ -75,7 +76,7 @@ Cross-feature contracts:
 
 | Interaction | Data owner | Consumer needs | Mechanism |
 |---|---|---|---|
-| Application shows attached resume | Resumes | id and display name | Records store `resumeId` and a `resumeName` snapshot, decided 2026-10-18, so the details screen needs no resume module. Where the list of resumes to choose from comes from is agreed with Hira before Increment 8; applications does not keep its own resume list |
+| Application shows attached resume | Resumes | id and display name | Records store `resumeId` and a `resumeName` snapshot, decided 2026-10-18, so the details screen needs no resume module. Until the resumes feature exports a resume list and upload, applications keeps a three-item stand-in `sampleResumes` marked TODO(SCRUM-277); switching is one import in `ResumeSelection.tsx` |
 | Matching compares an application and a resume | Applications, Resumes | ids | Navigation with query parameters, agreed with Nicolas |
 | Analytics and follow-ups read applications | Applications | read-only records | `useApplications()` exported from the applications index, if Nikole needs live data |
 | Dashboard links to areas | Shell | route paths | Static links; no feature data in the shell initially |
@@ -107,7 +108,7 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 5 | 276.3 | Done 2026-10-18: Application Record Details with every field and its empty wording, Back, Edit and Delete actions, Record Not Found for unknown ids and Access Denied for a reserved id; `formatDeadline` shared by list and details | build, lint, 29 tests, format check pass; checked in Chrome at 1280 and 375 px wide | 2 h |
 | 6 | 276.4 | Done 2026-10-18: Edit Application Record, prefilled, with Cancel back to details, Save changes, the same validation and simulated failure as create; `ApplicationForm`, `useApplication`, `RecordUnavailable` and the shared `PageHeader` extracted for their second use | build, lint, 37 tests, format check pass; create tests unchanged after the extraction; checked in Chrome at 1280 and 375 px wide | 2.5 h |
 | 7 | 276.5 | Done 2026-10-19: Delete Application Confirmation with Cancel back to details, a red Delete application button, the `removed` action, and a simulated delete failure with retry; the "no records yet" state is now reachable; the placeholder page is gone | build, lint, 44 tests, format check pass; checked in Chrome at 1280 and 375 px wide, including deleting every record | 1.5 h |
-| 8 | 276.6 | Resume selection step, sample resumes, mock file pick, attach, cancel | selection flow test | 2 h |
+| 8 | 276.6 | Done 2026-10-19: Resume Upload and Selection as a step inside the create and edit forms: three stand-in sample resumes, a PDF or DOCX picker that keeps only the file name, Attach and Cancel, typed values preserved, focus moved into the step and back; `.field` and the form panels now let wide controls shrink on phones | build, lint, 50 tests, format check pass; checked in Chrome at 1280 and 375 px wide with real PDF and PNG files | 2.5 h |
 | 9 | 276.7 | End-to-end workflow check, fixes, React and accessibility review | full suite, build, manual script | 2 h |
 | 10 | 280 | Integrate teammate modules, resolve contracts | every route renders | depends on team |
 | 11 | 280 | Quality gate: /code-review, /simplify, antislop Delivery Gate, accessibility | reports, fixes | 2 h |

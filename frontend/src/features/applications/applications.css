@@ -55,6 +55,7 @@
 .application-form,
 .delete-confirmation {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
   max-width: 40rem;
   padding: var(--space-6);
@@ -143,4 +144,29 @@
 .delete-question {
   font-size: var(--text-lg);
   font-weight: 600;
+}
+
+.resume-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Resume text sits inside .field, whose 600 weight is meant for labels only. */
+.resume-row,
+.resume-picked {
+  font-weight: 400;
+}
+
+.resume-step h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.resume-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }

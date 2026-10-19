@@ -1,5 +1,7 @@
 import { useState, type ChangeEventHandler, type FormEvent } from 'react';
 import { Link } from 'react-router';
+import { ResumeSelection } from './ResumeSelection';
+import { TextField } from './TextField';
 import { APPLICATION_STATUSES, type ApplicationDraft } from './types';
 import { validateApplication } from './validation';
 
@@ -19,6 +21,8 @@ export function ApplicationForm({
   const [draft, setDraft] = useState(initialDraft);
   const [submit, setSubmit] = useState<'idle' | 'attempted' | 'failed'>('idle');
   const [simulateFailure, setSimulateFailure] = useState(false);
+  // 'returned' puts focus back on the resume button after the step closes.
+  const [resumeStep, setResumeStep] = useState<'closed' | 'open' | 'returned'>('closed');
   const errors = submit === 'idle' ? {} : validateApplication(draft);
 
   const update: ChangeHandler = (event) =>
@@ -48,6 +52,19 @@ export function ApplicationForm({
     onSave({ ...draft, jobTitle: draft.jobTitle.trim(), employer: draft.employer.trim() });
   }
 
+  if (resumeStep === 'open') {
+    return (
+      <ResumeSelection
+        current={{ id: draft.resumeId, name: draft.resumeName }}
+        onAttach={(resume) => {
+          setDraft({ ...draft, resumeId: resume.id, resumeName: resume.name });
+          setResumeStep('returned');
+        }}
+        onCancel={() => setResumeStep('returned')}
+      />
+    );
+  }
+
   return (
     <form className="panel application-form" noValidate onSubmit={save}>
       {submit === 'failed' && (
@@ -68,6 +85,21 @@ export function ApplicationForm({
         </select>
       </div>
       <TextField label="Deadline" type="date" {...field('deadline')} />
+      <div className="field">
+        <span>Resume</span>
+        <div className="resume-row">
+          <span id="resume-name">{draft.resumeName || 'No resume attached'}</span>
+          <button
+            type="button"
+            className="button"
+            aria-describedby="resume-name"
+            autoFocus={resumeStep === 'returned'}
+            onClick={() => setResumeStep('open')}
+          >
+            {draft.resumeName ? 'Change resume' : 'Select or upload resume'}
+          </button>
+        </div>
+      </div>
       <div className="field">
         <label htmlFor="notes">Notes</label>
         <textarea id="notes" name="notes" rows={4} value={draft.notes} onChange={update} />
@@ -97,42 +129,5 @@ export function ApplicationForm({
         </button>
       </div>
     </form>
-  );
-}
-
-function TextField({
-  name,
-  label,
-  type = 'text',
-  value,
-  error,
-  onChange,
-}: {
-  name: keyof ApplicationDraft;
-  label: string;
-  type?: string;
-  value: string;
-  error?: string;
-  onChange: ChangeHandler;
-}) {
-  const errorId = `${name}-error`;
-  return (
-    <div className="field">
-      <label htmlFor={name}>{label}</label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-      />
-      {error && (
-        <p id={errorId} className="field-error">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }

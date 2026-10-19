@@ -1,4 +1,11 @@
-import type { ApplicationRecord } from './types';
+import type { ApplicationRecord, ResumeRef } from './types';
+
+// TODO(SCRUM-277): stand-in until the resumes feature exports the resume list and upload.
+export const sampleResumes: ResumeRef[] = [
+  { id: 'res-1', name: 'Software resume, September 2026.pdf' },
+  { id: 'res-2', name: 'Cloud and DevOps resume.docx' },
+  { id: 'res-3', name: 'General co-op resume.pdf' },
+];
 
 // Prototype stand-in for a record that belongs to another student, used to show Access Denied.
 export const restrictedApplicationId = 'app-restricted';
