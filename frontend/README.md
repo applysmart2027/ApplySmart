@@ -41,7 +41,7 @@ Code lives under `src/` and is organised by feature. See `docs/adr/0003-feature-
 | `src/features/<area>/` | One functional area. `index.ts` exports the area's routes and is the only file other folders may import                                                                                                                                                                                                                                                                                                               |
 | `src/shared/styles/`   | `tokens.css` loads the Mulish font and holds every colour, font size, spacing step, radius and border as a CSS variable; `src/shared/ui/` holds shared components, starting with `PageHeader` for page titles, subtitles and actions; `base.css` holds global element styles and the shared classes: `.page-header`, `.page-intro`, `.panel`, `.button`, `.button-primary`, `.field`, `.empty-state` and `.text-link` |
 
-To add a screen to your area, add a route to your feature's `index.ts`. You do not need to edit `src/app/`. Use the variables in `tokens.css` for any colour or spacing; a colour value written anywhere else is a review failure.
+To add a screen to your area, add a route to your feature's `index.ts`. You do not need to edit `src/app/`. Start each page with `PageHeader` from `src/shared/ui/`: it renders the heading and also sets the browser tab title. After every navigation the shell moves keyboard focus to the page content, so a page should not try to focus an element of its own when it first opens. Use the variables in `tokens.css` for any colour or spacing; a colour value written anywhere else is a review failure.
 
 ## Tests
 

@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { PageHeader } from '../../shared/ui/PageHeader';
 
 const messages = {
   'not-found': {
@@ -14,14 +15,16 @@ const messages = {
 export function RecordUnavailable({ reason }: { reason: keyof typeof messages }) {
   const { title, text } = messages[reason];
   return (
-    <>
-      <h1>{title}</h1>
-      <p className="page-intro">
-        {text}{' '}
-        <Link to="/applications" className="text-link">
-          Back to Application Records
-        </Link>
-      </p>
-    </>
+    <PageHeader
+      title={title}
+      subtitle={
+        <>
+          {text}{' '}
+          <Link to="/applications" className="text-link">
+            Back to Application Records
+          </Link>
+        </>
+      }
+    />
   );
 }

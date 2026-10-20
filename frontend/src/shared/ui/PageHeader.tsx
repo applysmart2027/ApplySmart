@@ -6,11 +6,12 @@ export function PageHeader({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   children?: ReactNode;
 }) {
   return (
     <div className="page-header">
+      <title>{`${title} | ApplySmart`}</title>
       <div>
         <h1>{title}</h1>
         {subtitle && <p className="page-intro">{subtitle}</p>}

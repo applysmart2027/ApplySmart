@@ -1,8 +1,21 @@
-import { Link, NavLink, Outlet } from 'react-router';
+import { useEffect, useRef } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { areas } from './areas';
 import './app.css';
 
 export function AppShell() {
+  const { pathname } = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
+  const previousPath = useRef(pathname);
+
+  // After navigating, start keyboard and screen-reader users at the new page's content.
+  // Comparing paths (not a first-render flag) keeps focus put on load, even under StrictMode.
+  useEffect(() => {
+    if (previousPath.current === pathname) return;
+    previousPath.current = pathname;
+    mainRef.current?.focus();
+  }, [pathname]);
+
   return (
     <div className="shell">
       <a className="skip-link" href="#main">
@@ -28,7 +41,7 @@ export function AppShell() {
           ))}
         </ul>
       </nav>
-      <main id="main" className="shell-main" tabIndex={-1}>
+      <main id="main" className="shell-main" tabIndex={-1} ref={mainRef}>
         <Outlet />
       </main>
     </div>

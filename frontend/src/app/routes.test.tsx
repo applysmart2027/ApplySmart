@@ -29,13 +29,16 @@ test.each([
   ['Resumes', 'Resume Management and Parsing'],
   ['Matching', 'Resume Matching and Gap Analysis'],
   ['Recommendations', 'Recommendations, Analytics and Follow-ups'],
-])('the "%s" link opens its page and is the only current link', (linkName, heading) => {
+])('the "%s" link opens its page, marks it current and moves focus to it', (linkName, heading) => {
   renderAt('/');
+  expect(document.title).toBe('Dashboard | ApplySmart');
+  expect(screen.getByRole('main')).not.toHaveFocus();
 
   fireEvent.click(sidebar().getByRole('link', { name: linkName }));
 
   expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument();
   expect(sidebar().getByRole('link', { current: 'page' })).toHaveAccessibleName(linkName);
+  expect(screen.getByRole('main')).toHaveFocus();
 });
 
 test('an unknown address shows page not found and links back to the dashboard', () => {
@@ -59,6 +62,7 @@ test('a student creates, views, edits and deletes an application from the dashbo
   click('link', 'Applications');
   click('link', 'New application');
   expect(heading()).toHaveTextContent('Create Application Record');
+  expect(document.title).toBe('Create Application Record | ApplySmart');
 
   fill('Job title (required)', 'Data Engineer');
   fill('Employer (required)', 'Maplestone Robotics');
@@ -90,4 +94,17 @@ test('a student creates, views, edits and deletes an application from the dashbo
   expect(heading()).toHaveTextContent('Application Records');
   expect(screen.getAllByRole('row')).toHaveLength(7);
   expect(screen.queryByText('Data Engineer')).not.toBeInTheDocument();
+});
+
+test.each([
+  ['Job Discovery and Application Tracking', 'Application Records'],
+  ['Resume Management and Parsing', 'Resume Management and Parsing'],
+  ['Resume Matching and Gap Analysis', 'Resume Matching and Gap Analysis'],
+  ['Recommendations, Analytics and Follow-ups', 'Recommendations, Analytics and Follow-ups'],
+])('the dashboard link "%s" opens its page', (linkName, heading) => {
+  renderAt('/');
+
+  fireEvent.click(within(screen.getByRole('main')).getByRole('link', { name: linkName }));
+
+  expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument();
 });

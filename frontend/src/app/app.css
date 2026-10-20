@@ -82,6 +82,12 @@
   background: var(--color-accent-soft);
 }
 
+/* Invisible normally; high contrast mode paints it, so the current page stays marked there. */
+.shell-nav a[aria-current='page']:not(:focus-visible) {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
 .shell-main {
   grid-area: main;
   max-width: 72rem;
@@ -93,7 +99,7 @@
 }
 
 .area-list {
-  margin: var(--space-6) 0 0;
+  margin: 0;
   padding: 0 var(--space-6);
   list-style: none;
 }

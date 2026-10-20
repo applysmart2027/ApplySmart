@@ -11,6 +11,7 @@ export function renderAt(path: string, initialRecords?: ApplicationRecord[]) {
       <RouterProvider router={router} />
     </ApplicationsProvider>,
   );
+  return router;
 }
 
 export function heading() {

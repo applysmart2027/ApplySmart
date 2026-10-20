@@ -18,7 +18,9 @@ export function EditApplicationPage() {
   return (
     <>
       <PageHeader title="Edit Application Record" subtitle={describeApplication(record)} />
+      {/* Keyed by record so moving straight to another record's edit page starts a fresh draft. */}
       <ApplicationForm
+        key={record.id}
         initialDraft={record}
         submitLabel="Save changes"
         cancelTo={detailsPath}

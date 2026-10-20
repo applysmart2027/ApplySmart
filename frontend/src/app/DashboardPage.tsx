@@ -1,12 +1,12 @@
 import { Link } from 'react-router';
+import { PageHeader } from '../shared/ui/PageHeader';
 import { areas } from './areas';
 import './app.css';
 
 export function DashboardPage() {
   return (
     <>
-      <h1>Dashboard</h1>
-      <p className="page-intro">Choose an area to work in.</p>
+      <PageHeader title="Dashboard" subtitle="Choose an area to work in." />
       <ul className="panel area-list">
         {areas.map((area) => (
           <li key={area.path}>

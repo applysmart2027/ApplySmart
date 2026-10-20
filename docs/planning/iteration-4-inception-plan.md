@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 8 built and verified; Increment 9 tests and documents done, review findings awaiting approval.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 9b built and verified; SCRUM-276 complete. Teammate integration (Increment 10) next.
 
 ## 1. Goals
 
@@ -109,7 +109,8 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 6 | 276.4 | Done 2026-10-18: Edit Application Record, prefilled, with Cancel back to details, Save changes, the same validation and simulated failure as create; `ApplicationForm`, `useApplication`, `RecordUnavailable` and the shared `PageHeader` extracted for their second use | build, lint, 37 tests, format check pass; create tests unchanged after the extraction; checked in Chrome at 1280 and 375 px wide | 2.5 h |
 | 7 | 276.5 | Done 2026-10-19: Delete Application Confirmation with Cancel back to details, a red Delete application button, the `removed` action, and a simulated delete failure with retry; the "no records yet" state is now reachable; the placeholder page is gone | build, lint, 44 tests, format check pass; checked in Chrome at 1280 and 375 px wide, including deleting every record | 1.5 h |
 | 8 | 276.6 | Done 2026-10-19: Resume Upload and Selection as a step inside the create and edit forms: three stand-in sample resumes, a PDF or DOCX picker that keeps only the file name, Attach and Cancel, typed values preserved, focus moved into the step and back; `.field` and the form panels now let wide controls shrink on phones | build, lint, 50 tests, format check pass; checked in Chrome at 1280 and 375 px wide with real PDF and PNG files | 2.5 h |
-| 9 | 276.7 | Tests and documents done 2026-10-19: end-to-end workflow test through the shell, the three missing coverage cases, the coverage table above, and the README demo script; review findings reported for approval | build, lint, 53 tests, format check pass; demo script followed in Chrome | 2.5 h |
+| 9 | 276.7 | Done 2026-10-19: end-to-end workflow test through the shell, the three missing coverage cases, the coverage table above, the README demo script, and the code, React and accessibility reviews | build, lint, 53 tests, format check pass; demo script followed in Chrome | 2.5 h |
+| 9b | 276.7 | Done 2026-10-19: review fixes. Every page sets a browser title through `PageHeader`; focus moves to the page content after navigation; the current sidebar item stays marked in high contrast mode; the edit form resets when the record changes; dashboard links are tested; ADRs 0001 to 0005 marked Proposed pending team review. Deferred to Increment 11: dashboard line length on wide screens, sidebar hover contrast, sidebar text alignment | build, lint, 58 tests, format check pass; titles, focus and forced colours checked in Chrome | 1 h |
 | 10 | 280 | Integrate teammate modules, resolve contracts | every route renders | depends on team |
 | 11 | 280 | Quality gate: /code-review, /simplify, antislop Delivery Gate, accessibility | reports, fixes | 2 h |
 | 12 | 280 | Demo readiness: README, known limitations, Jira updates identified | fresh clone runs | 1 h |

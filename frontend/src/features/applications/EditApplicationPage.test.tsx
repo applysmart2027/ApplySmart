@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { expect, test } from 'vitest';
 import { detail, fill, heading, renderAt, simulateFailure, submit } from './test-utils';
 
@@ -102,4 +102,12 @@ test.each([
   renderAt(`/applications/${id}/edit`);
 
   expect(heading()).toHaveTextContent(message);
+});
+
+test("moving straight to another record's edit page shows that record", async () => {
+  const router = renderAt('/applications/app-1/edit');
+
+  await act(() => router.navigate('/applications/app-2/edit'));
+
+  expect(screen.getByLabelText('Job title (required)')).toHaveValue('Cloud Engineer');
 });
