@@ -26,7 +26,7 @@ test('the dashboard lists every area in the sidebar and in the page', () => {
 
 test.each([
   ['Applications', 'Application Records'],
-  ['Resumes', 'Resume Management and Parsing'],
+  ['Resumes', 'My Resumes'],
   ['Matching', 'Resume Matching and Gap Analysis'],
   ['Recommendations', 'Recommendations, Analytics and Follow-ups'],
 ])('the "%s" link opens its page, marks it current and moves focus to it', (linkName, heading) => {
@@ -98,7 +98,7 @@ test('a student creates, views, edits and deletes an application from the dashbo
 
 test.each([
   ['Job Discovery and Application Tracking', 'Application Records'],
-  ['Resume Management and Parsing', 'Resume Management and Parsing'],
+  ['Resume Management and Parsing', 'My Resumes'],
   ['Resume Matching and Gap Analysis', 'Resume Matching and Gap Analysis'],
   ['Recommendations, Analytics and Follow-ups', 'Recommendations, Analytics and Follow-ups'],
 ])('the dashboard link "%s" opens its page', (linkName, heading) => {
