@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Accepted |
+| **Status** | Proposed, pending team review |
 | **Date** | 2026-10-17 |
 | **Deciders** | Anthony Vydysh; team review pending |
 
@@ -18,9 +18,9 @@ The accent becomes #2350F5, a vivid blue, with #E8EEFF as a soft tint behind the
 
 ## Consequences
 
-**Positive:** headings and body text have a recognisable character on every operating system, where the system font differed between Windows and macOS. Changing the typeface or the accent is still a one-file edit in `tokens.css`. White text on the accent measures 5.9:1 and the accent as text on the page background 5.5:1, so both pass WCAG AA.
+**Positive:** headings and body text have a recognisable character on every operating system, where the system font differed between Windows and macOS. Changing the accent is still a one-file edit in `tokens.css`. White text on the accent measures 5.9:1 and the accent as text on the page background 5.5:1, so both pass WCAG AA.
 
-**Negative:** the app gains its first dependency beyond React and react-router. The build ships five font files of 10 to 30 KB each for Latin, extended Latin, Cyrillic, extended Cyrillic and Vietnamese; browsers download only the subsets a page uses, which for English text is the 30 KB Latin file. Text renders in the fallback font for a moment before Mulish arrives, because the package uses `font-display: swap`. Teammates have not reviewed the change.
+**Negative:** the app gains its first dependency beyond React and react-router. The build ships five font files of 10 to 30 KB each for Latin, extended Latin, Cyrillic, extended Cyrillic and Vietnamese; browsers download only the subsets a page uses, which for English text is the 30 KB Latin file. Text renders in the fallback font for a moment before Mulish arrives, because the package uses `font-display: swap`. Changing the typeface later is not a one-file edit: the font weights set in `base.css` and `app.css` are chosen for Mulish, and a weight-300 heading is too thin in some system fonts. Teammates have not reviewed the change.
 
 **Neutral:** the navy accent recorded in ADR-0002's description of the visual direction is replaced by this decision. ADR-0002's styling rules are unchanged.
 

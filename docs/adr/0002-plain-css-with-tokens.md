@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Accepted |
+| **Status** | Proposed, pending team review. ADR-0005 replaces the deep-blue accent described below |
 | **Date** | 2026-10-16 |
 | **Deciders** | Anthony Vydysh; team review pending |
 

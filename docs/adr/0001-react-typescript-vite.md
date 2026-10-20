@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Accepted |
+| **Status** | Proposed, pending team review |
 | **Date** | 2026-10-16 |
 | **Deciders** | Anthony Vydysh; team review pending |
 
