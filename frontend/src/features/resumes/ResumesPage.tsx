@@ -5,6 +5,7 @@ import { formatUploaded } from './format';
 import { RowMenu, type RowMenuItem } from './RowMenu';
 import { sampleResumeVersions } from './sampleData';
 import { RESUME_VERSION_LIMIT, type ParseStatus, type ResumeVersion } from './types';
+import { UploadResumeDialog } from './UploadResumeDialog';
 import './resumes.css';
 
 // The main action for each parse status. Processing has none until parsing finishes.
@@ -31,6 +32,7 @@ export function ResumesPage({
   const [resumes, setResumes] = useState(initialResumes);
   const [pendingDelete, setPendingDelete] = useState<ResumeVersion | null>(null);
   const [announcement, setAnnouncement] = useState('');
+  const [uploading, setUploading] = useState(false);
   const atLimit = resumes.length >= RESUME_VERSION_LIMIT;
 
   function makePrimary(resume: ResumeVersion) {
@@ -55,18 +57,18 @@ export function ResumesPage({
     return items;
   }
 
-  const uploadAction = atLimit ? (
-    <button type="button" className="button button-primary" disabled>
-      Upload resume
-    </button>
-  ) : (
-    <Link to="/resumes/upload" className="button button-primary">
-      <span aria-hidden="true" className="button-icon">
-        +
-      </span>
-      Upload resume
-    </Link>
-  );
+  // New uploads start parsing straight away, so they join the list as Processing.
+  function addUpload({ versionName, uploaded }: { versionName: string; uploaded: string }) {
+    const resume: ResumeVersion = {
+      id: crypto.randomUUID(),
+      versionName,
+      parseStatus: 'Processing',
+      isPrimary: false,
+      uploaded,
+    };
+    setResumes([...resumes, resume]);
+    setAnnouncement(`${versionName} was uploaded. Parsing has started.`);
+  }
 
   return (
     <>
@@ -79,8 +81,26 @@ export function ResumesPage({
           </>
         }
       >
-        {uploadAction}
+        <button
+          type="button"
+          className="button button-primary"
+          disabled={atLimit}
+          onClick={() => setUploading(true)}
+        >
+          <span aria-hidden="true" className="button-icon">
+            +
+          </span>
+          Upload resume
+        </button>
       </PageHeader>
+
+      {uploading && (
+        <UploadResumeDialog
+          existingNames={resumes.map((r) => r.versionName)}
+          onUpload={addUpload}
+          onClose={() => setUploading(false)}
+        />
+      )}
 
       <p role="status" className="visually-hidden">
         {announcement}
@@ -111,9 +131,13 @@ export function ResumesPage({
       {resumes.length === 0 ? (
         <div className="panel empty-state">
           <p>You have not uploaded a resume yet.</p>
-          <Link to="/resumes/upload" className="text-link">
+          <button
+            type="button"
+            className="text-link link-button"
+            onClick={() => setUploading(true)}
+          >
             Upload your first resume
-          </Link>
+          </button>
         </div>
       ) : (
         <>

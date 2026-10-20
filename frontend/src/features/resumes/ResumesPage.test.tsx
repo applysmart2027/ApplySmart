@@ -49,10 +49,6 @@ test('each parse status offers its own action, and Processing offers none', () =
     '/resumes/res-4/resolve',
   );
   expect(row('Data Analyst Internship').queryByRole('link')).not.toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Upload resume' })).toHaveAttribute(
-    'href',
-    '/resumes/upload',
-  );
 });
 
 test('a confirmed version can be made primary, replacing the previous one', () => {
@@ -132,9 +128,7 @@ test('with no versions the page offers to upload the first one', () => {
   renderPage([]);
 
   expect(screen.getByText('You have not uploaded a resume yet.')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Upload your first resume' })).toHaveAttribute(
-    'href',
-    '/resumes/upload',
-  );
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Upload your first resume' }));
+  expect(screen.getByRole('dialog', { name: 'Upload resume' })).toBeInTheDocument();
 });
