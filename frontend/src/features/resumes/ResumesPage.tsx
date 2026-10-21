@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
+import { DeleteVersionConfirm } from './DeleteVersionConfirm';
 import { formatUploaded } from './format';
+import { ParseStatusBadge } from './ParseStatusBadge';
 import { RowMenu, type RowMenuItem } from './RowMenu';
-import { sampleResumeVersions } from './sampleData';
-import { RESUME_VERSION_LIMIT, type ParseStatus, type ResumeVersion } from './types';
+import { useResumes } from './store';
+import { emptySections, RESUME_VERSION_LIMIT, type ParseStatus, type ResumeVersion } from './types';
 import { UploadResumeDialog } from './UploadResumeDialog';
 import './resumes.css';
 
@@ -17,32 +19,30 @@ const statusActions: Partial<
   Failed: { verb: 'Resolve', suffix: '/resolve', primary: true },
 };
 
-const statusClasses: Record<ParseStatus, string> = {
-  Processing: 'parse-status-processing',
-  'Needs review': 'parse-status-review',
-  Confirmed: 'parse-status-confirmed',
-  Failed: 'parse-status-failed',
-};
+// Other resume screens send a message here in navigation state after they change the list.
+export type ResumesPageState = { announcement: string } | null;
 
-export function ResumesPage({
-  initialResumes = sampleResumeVersions,
-}: {
-  initialResumes?: ResumeVersion[];
-}) {
-  const [resumes, setResumes] = useState(initialResumes);
+export function ResumesPage() {
+  const { resumes, dispatch } = useResumes();
+  const location = useLocation();
   const [pendingDelete, setPendingDelete] = useState<ResumeVersion | null>(null);
   const [announcement, setAnnouncement] = useState('');
   const [uploading, setUploading] = useState(false);
   const atLimit = resumes.length >= RESUME_VERSION_LIMIT;
 
+  // A message sent by another screen shows until this page has one of its own. The shell moves
+  // focus to the top of main after navigating, so screen readers reach it first.
+  const shownAnnouncement =
+    announcement || (location.state as ResumesPageState)?.announcement || '';
+
   function makePrimary(resume: ResumeVersion) {
-    setResumes(resumes.map((r) => ({ ...r, isPrimary: r.id === resume.id })));
+    dispatch({ type: 'madePrimary', id: resume.id });
     setAnnouncement(`${resume.versionName} is now your primary resume.`);
   }
 
   function confirmDelete() {
     if (!pendingDelete) return;
-    setResumes(resumes.filter((r) => r.id !== pendingDelete.id));
+    dispatch({ type: 'removed', id: pendingDelete.id });
     setAnnouncement(`${pendingDelete.versionName} was deleted.`);
     setPendingDelete(null);
   }
@@ -59,14 +59,19 @@ export function ResumesPage({
 
   // New uploads start parsing straight away, so they join the list as Processing.
   function addUpload({ versionName, uploaded }: { versionName: string; uploaded: string }) {
-    const resume: ResumeVersion = {
-      id: crypto.randomUUID(),
-      versionName,
-      parseStatus: 'Processing',
-      isPrimary: false,
-      uploaded,
-    };
-    setResumes([...resumes, resume]);
+    dispatch({
+      type: 'created',
+      resume: {
+        id: crypto.randomUUID(),
+        versionName,
+        parseStatus: 'Processing',
+        isPrimary: false,
+        uploaded,
+        parseAttempts: 1,
+        failureReason: '',
+        sections: emptySections(),
+      },
+    });
     setAnnouncement(`${versionName} was uploaded. Parsing has started.`);
   }
 
@@ -103,29 +108,16 @@ export function ResumesPage({
       )}
 
       <p role="status" className="visually-hidden">
-        {announcement}
+        {shownAnnouncement}
       </p>
 
       {pendingDelete && (
-        <section className="panel resume-confirm" aria-labelledby="resume-confirm-title">
-          <p id="resume-confirm-title" className="resume-confirm-question">
-            Delete “{pendingDelete.versionName}”?
-          </p>
-          <p>This removes the file and everything parsed from it. It cannot be undone.</p>
-          <div className="resume-confirm-actions">
-            <button
-              type="button"
-              className="button"
-              autoFocus
-              onClick={() => setPendingDelete(null)}
-            >
-              Cancel
-            </button>
-            <button type="button" className="button button-danger" onClick={confirmDelete}>
-              Delete version
-            </button>
-          </div>
-        </section>
+        <DeleteVersionConfirm
+          versionName={pendingDelete.versionName}
+          className="panel resume-confirm-panel"
+          onCancel={() => setPendingDelete(null)}
+          onConfirm={confirmDelete}
+        />
       )}
 
       {resumes.length === 0 ? (
@@ -162,9 +154,7 @@ export function ResumesPage({
                     <tr key={r.id}>
                       <td>{r.versionName}</td>
                       <td>
-                        <span className={`parse-status ${statusClasses[r.parseStatus]}`}>
-                          {r.parseStatus}
-                        </span>
+                        <ParseStatusBadge status={r.parseStatus} />
                       </td>
                       <td>
                         {r.isPrimary && (

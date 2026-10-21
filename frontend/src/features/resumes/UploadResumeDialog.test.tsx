@@ -1,15 +1,11 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
 import { formatUploaded, todayIso } from './format';
-import { ResumesPage } from './ResumesPage';
+import { renderAt } from './test-utils';
 import { defaultVersionName } from './uploadValidation';
 
 function openUpload() {
-  const router = createMemoryRouter([{ path: '/resumes', Component: ResumesPage }], {
-    initialEntries: ['/resumes'],
-  });
-  render(<RouterProvider router={router} />);
+  renderAt('/resumes');
   fireEvent.click(screen.getByRole('button', { name: 'Upload resume' }));
   return within(screen.getByRole('dialog', { name: 'Upload resume' }));
 }

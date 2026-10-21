@@ -2,12 +2,15 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { expect, test } from 'vitest';
 import { ApplicationsProvider } from '../features/applications';
+import { ResumesProvider } from '../features/resumes';
 import { routes } from './routes';
 
 function renderAt(path: string) {
   render(
     <ApplicationsProvider>
-      <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
+      <ResumesProvider>
+        <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
+      </ResumesProvider>
     </ApplicationsProvider>,
   );
 }

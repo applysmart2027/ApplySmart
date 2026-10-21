@@ -3,10 +3,14 @@ import { formatFileSize, todayIso } from './format';
 import { defaultVersionName, fileProblem, type Problem } from './uploadValidation';
 
 export function UploadResumeDialog({
+  title = 'Upload resume',
+  initialName = '',
   existingNames,
   onUpload,
   onClose,
 }: {
+  title?: string;
+  initialName?: string;
   existingNames: string[];
   onUpload: (upload: { versionName: string; file: File; uploaded: string }) => void;
   onClose: () => void;
@@ -14,7 +18,7 @@ export function UploadResumeDialog({
   const dialog = useRef<HTMLDialogElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [versionName, setVersionName] = useState('');
+  const [versionName, setVersionName] = useState(initialName);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [dragging, setDragging] = useState(false);
   const hintId = useId();
@@ -67,14 +71,14 @@ export function UploadResumeDialog({
   return (
     <dialog
       ref={dialog}
-      className="upload-dialog"
-      aria-labelledby="upload-dialog-title"
+      className="resume-dialog"
+      aria-labelledby="resume-dialog-title"
       onClose={onClose}
     >
       <form className="upload-form" onSubmit={submit} noValidate>
-        <div className="upload-dialog-header">
-          <h2 id="upload-dialog-title">Upload resume</h2>
-          <button type="button" className="upload-dialog-close" aria-label="Close" onClick={close}>
+        <div className="resume-dialog-header">
+          <h2 id="resume-dialog-title">{title}</h2>
+          <button type="button" className="resume-dialog-close" aria-label="Close" onClick={close}>
             <span aria-hidden="true">×</span>
           </button>
         </div>

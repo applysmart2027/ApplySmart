@@ -1,10 +1,28 @@
-import { useId, useRef, useState, type FocusEvent, type KeyboardEvent } from 'react';
+import {
+  useId,
+  useRef,
+  useState,
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 
 export type RowMenuItem = { label: string; onSelect: () => void };
 
 // A disclosure button that shows extra row actions. It closes on Escape, when focus
-// leaves it, and after an action runs.
-export function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
+// leaves it, and after an action runs. Without visible children the toggle is a ⋮ icon, so
+// it needs a label.
+export function RowMenu({
+  label,
+  items,
+  children,
+  toggleClassName = 'row-menu-toggle',
+}: {
+  label?: string;
+  items: RowMenuItem[];
+  children?: ReactNode;
+  toggleClassName?: string;
+}) {
   const [open, setOpen] = useState(false);
   const listId = useId();
   const toggle = useRef<HTMLButtonElement>(null);
@@ -24,13 +42,13 @@ export function RowMenu({ label, items }: { label: string; items: RowMenuItem[] 
       <button
         ref={toggle}
         type="button"
-        className="row-menu-toggle"
+        className={toggleClassName}
         aria-label={label}
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
         onClick={() => setOpen(!open)}
       >
-        <span aria-hidden="true">⋮</span>
+        {children ?? <span aria-hidden="true">⋮</span>}
       </button>
       {open && (
         <ul id={listId} className="row-menu-list">

@@ -1,16 +1,11 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { ResumesPage } from './ResumesPage';
 import { sampleResumeVersions } from './sampleData';
+import { renderAt } from './test-utils';
 import type { ResumeVersion } from './types';
 
 function renderPage(initialResumes?: ResumeVersion[]) {
-  const router = createMemoryRouter(
-    [{ path: '/resumes', element: <ResumesPage initialResumes={initialResumes} /> }],
-    { initialEntries: ['/resumes'] },
-  );
-  render(<RouterProvider router={router} />);
+  renderAt('/resumes', initialResumes);
 }
 
 function row(versionName: string) {
