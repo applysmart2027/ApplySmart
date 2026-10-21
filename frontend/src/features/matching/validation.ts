@@ -1,0 +1,1 @@
+// Checks that a resume and job posting were selected before comparison.

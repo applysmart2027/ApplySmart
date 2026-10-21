@@ -1,0 +1,1 @@
+// TypeScript types like ComparisonResult, Qualification, MatchStatus, etc.
