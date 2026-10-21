@@ -31,7 +31,7 @@ test.each([
   ['Applications', 'Application Records'],
   ['Resumes', 'My Resumes'],
   ['Matching', 'Resume Matching and Gap Analysis'],
-  ['Recommendations', 'Recommendations, Analytics and Follow-ups'],
+  ['Recommendations', 'Recommended Jobs'],
 ])('the "%s" link opens its page, marks it current and moves focus to it', (linkName, heading) => {
   renderAt('/');
   expect(document.title).toBe('Dashboard | ApplySmart');
@@ -103,7 +103,7 @@ test.each([
   ['Job Discovery and Application Tracking', 'Application Records'],
   ['Resume Management and Parsing', 'My Resumes'],
   ['Resume Matching and Gap Analysis', 'Resume Matching and Gap Analysis'],
-  ['Recommendations, Analytics and Follow-ups', 'Recommendations, Analytics and Follow-ups'],
+  ['Recommendations, Analytics and Follow-ups', 'Recommended Jobs'],
 ])('the dashboard link "%s" opens its page', (linkName, heading) => {
   renderAt('/');
 

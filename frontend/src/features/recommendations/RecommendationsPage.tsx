@@ -98,7 +98,7 @@ export function RecommendationsPage() {
                 </p>
 
                 <p className="recommendation-location">
-                  <img className="location-icon" src="/public/geo-alt-fill.svg" alt="" aria-hidden="true"/>
+                  <img className="location-icon" src="/geo-alt-fill.svg" alt="" aria-hidden="true"/>
                   {job.location}
                 </p>
 
