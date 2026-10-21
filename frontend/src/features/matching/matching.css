@@ -1,1 +1,173 @@
-/* Matching-specific layout and styles. Shared buttons, panels, colors, etc. still come from /shared. */
+/* Layout for the comparison form and status cards */
+.matching-form,
+.matching-card {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 48rem;
+  padding: var(--space-6);
+}
+
+/* Small helper text used across matching screens */
+.matching-help,
+.matching-disclaimer {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Groups buttons together and allows them to wrap on smaller screens */
+.matching-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Displays the selected resume, job posting, and status information */
+.matching-details {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.matching-details > div {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.matching-details dt {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.matching-details dd {
+  margin: 0;
+}
+
+/* Processing progress area */
+.matching-progress {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.matching-progress progress {
+  width: 100%;
+  height: 1rem;
+  accent-color: var(--color-accent);
+}
+
+.matching-progress span {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Status text used on the failed comparison screen */
+.matching-status {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.matching-status-failed {
+  color: var(--color-danger);
+}
+
+/* Summary shown above the comparison results */
+.alignment-summary {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
+}
+
+.alignment-summary > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.alignment-summary strong {
+  font-size: var(--text-lg);
+  color: var(--color-success);
+}
+
+.matching-eyebrow {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* Places matched qualifications and gaps beside each other */
+.matching-results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* Individual result panels */
+.matching-result-card {
+  padding: var(--space-6);
+}
+
+.matching-result-card h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-lg);
+}
+
+/* List of qualifications inside each result panel */
+.qualification-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.qualification-list article + article {
+  padding-top: var(--space-4);
+  border-top: var(--border);
+}
+
+.qualification-list h3 {
+  margin: var(--space-2) 0;
+  font-size: var(--text-base);
+}
+
+.qualification-list p {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Required, preferred, or unspecified qualification label */
+.qualification-type {
+  display: inline-block;
+  padding: 0 var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  background: var(--color-accent-soft);
+}
+
+/* Adds spacing around the disclaimer below the results */
+.matching-disclaimer {
+  margin-bottom: var(--space-4);
+}
+
+/* Stacks content on smaller screens */
+@media (max-width: 48rem) {
+  .matching-results-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .matching-details > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .matching-form,
+  .matching-card,
+  .matching-result-card,
+  .alignment-summary {
+    padding: var(--space-4);
+  }
+}
