@@ -23,6 +23,13 @@ test('the matching page starts on the comparison form', () => {
   expect(
     screen.getByRole('heading', {
       level: 1,
+      name: 'Resume Matching and Gap Analysis',
+    }),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByRole('heading', {
+      level: 2,
       name: 'Compare Resume to Job',
     }),
   ).toBeInTheDocument();
@@ -65,6 +72,7 @@ test('a valid comparison can be processed and show results', () => {
   ).toBeInTheDocument();
 
   expect(screen.getByText('Cloud Co-op')).toBeInTheDocument();
+
   expect(
     screen.getByText('Junior Cloud Developer - Northstar Systems'),
   ).toBeInTheDocument();
@@ -119,6 +127,7 @@ test('a simulated processing failure shows the retry screen', () => {
 
   expect(screen.getByText('Status: Failed')).toBeInTheDocument();
   expect(screen.getByText('Software Developer - General')).toBeInTheDocument();
+
   expect(
     screen.getByText('Cloud Support Associate - MapleTech Solutions'),
   ).toBeInTheDocument();

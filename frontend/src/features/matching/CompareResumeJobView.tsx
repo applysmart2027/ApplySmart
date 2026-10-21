@@ -1,3 +1,4 @@
+import type { FormEvent } from 'react';
 import { PageHeader } from '../../shared/ui/PageHeader';
 import { sampleJobPostings, sampleResumes } from './sampleData';
 import type { MatchingErrors } from './validation';
@@ -26,7 +27,7 @@ export function CompareResumeJobView({
   onStart,
   onCancel,
 }: CompareResumeJobViewProps) {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onStart();
   }
@@ -34,9 +35,11 @@ export function CompareResumeJobView({
   return (
     <section>
       <PageHeader
-        title="Compare Resume to Job"
-        subtitle="Select a resume and job posting to compare your qualifications with the role."
+        title="Resume Matching and Gap Analysis"
+        subtitle="Compare a resume with a job posting to review matching qualifications and gaps."
       />
+
+      <h2>Compare Resume to Job</h2>
 
       <form className="matching-form panel" onSubmit={handleSubmit}>
         <label className="field">
