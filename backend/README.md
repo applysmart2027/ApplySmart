@@ -1,6 +1,6 @@
 # ApplySmart backend
 
-The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings and one empty app per subsystem; there is no database connection, endpoint or data yet.
+The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, one empty app per subsystem and a health endpoint, `GET /api/health/`, which returns `{"status": "ok"}`. There is no database connection or data yet.
 
 ## Apps
 
@@ -38,7 +38,7 @@ Every app has the same five files, one per layer of ADR-0006.
 | Add a field to a table | `models.py`, then run `python manage.py makemigrations <app>` and commit the new file in `<app>/migrations/` |
 | Add an endpoint | The view in `api.py`, and its path in `applysmart/urls.py` |
 
-## Run the checks
+## Run the checks and tests
 
 You need Python 3.13. These commands were run on Python 3.13.18 on Linux:
 
@@ -47,10 +47,12 @@ cd backend
 python3.13 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-DJANGO_SECRET_KEY=dev-only POSTGRES_PASSWORD=dev-only python manage.py check
+export DJANGO_SECRET_KEY=dev-only POSTGRES_PASSWORD=dev-only
+python manage.py check
+python manage.py test
 ```
 
-The last command prints `System check identified no issues (0 silenced).`
+`check` prints `System check identified no issues (0 silenced).` and `test` ends with `OK`.
 
 The same steps in Windows PowerShell, not yet tested:
 
@@ -61,7 +63,10 @@ py -3.13 -m venv .venv
 pip install -r requirements.txt
 $env:DJANGO_SECRET_KEY = "dev-only"; $env:POSTGRES_PASSWORD = "dev-only"
 python manage.py check
+python manage.py test
 ```
+
+Put the tests for your app in `<app>/tests.py`. The health endpoint test is in `applysmart/tests.py`.
 
 ## Settings
 
@@ -83,6 +88,7 @@ python manage.py check
 | Command | What it does |
 |---|---|
 | `python manage.py check` | Finds mistakes in settings and models without running anything |
+| `python manage.py test` | Runs every test in files whose name starts with `test` |
 | `python manage.py makemigrations <app>` | Writes a migration file for model changes in that app |
 | `python manage.py migrate` | Applies migrations to the database |
 | `python manage.py runserver` | Starts the development server on port 8000 |
@@ -90,4 +96,5 @@ python manage.py check
 ## Known limitations
 
 - `migrate` and `runserver` fail because no PostgreSQL database is set up yet.
-- Every app is empty, so no endpoint answers yet.
+- Every app is empty, so the health endpoint is the only endpoint.
+- The tests run on your machine only; there is no Docker command for them yet.
