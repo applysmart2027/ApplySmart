@@ -11,7 +11,7 @@ ApplySmart helps students keep track of their job, internship, and co-op applica
 | Resume Matching and Gap Analysis | Nicolas Mesti | `frontend/src/features/matching/` |
 | Recommendations, Analytics and Follow-ups | Nikole Phipps Santos | `frontend/src/features/recommendations/` |
 
-The shell, dashboard, and routing under `frontend/src/app/` are shared. Feature folders are created as each owner starts work.
+The shell, dashboard, and routing under `frontend/src/app/` are shared.
 
 ## Run the prototype
 
@@ -26,6 +26,7 @@ npm run dev
 
 ## Documents
 
+- [Architecture Release plan](docs/planning/architecture-release-plan.md): the proposed architecture, the Create Application Record increments, and the decisions still open.
 - [Iteration 4 plan](docs/planning/iteration-4-inception-plan.md): goals, architecture, increments, and open decisions for the Inception UI prototype.
 - [Architecture decision records](docs/adr/): why the stack, styling, folder structure, and state ownership are what they are.
 

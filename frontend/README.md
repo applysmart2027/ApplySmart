@@ -51,7 +51,7 @@ Vitest runs in a jsdom environment with React Testing Library. `src/setupTests.t
 
 Start the dev server and open the address it prints. Every step uses the sample data, which resets when the page is refreshed.
 
-1. **Dashboard.** The four areas are listed, and the sidebar marks Dashboard as current. Resumes, Matching and Recommendations open a placeholder until their owners build them.
+1. **Dashboard.** The four areas are listed, and the sidebar marks Dashboard as current. Steps 2 to 11 cover Applications; the other three areas are listed under Other areas below.
 2. **Application Records.** Open Applications. Search for "lakeshore" to narrow the table to one row, then for "astronaut" to see the no-matches message, and press Clear search and filters. Set Status to Offer, then back to All statuses, and sort by employer.
 3. **Missing and invalid fields.** Press New application, then Save application with nothing filled in: both required fields explain themselves and focus moves to Job title. Enter "Data Engineer" and "Maplestone Robotics", type "careers page" as the posting URL and save again to see the address message, then clear the URL.
 4. **Resume step.** Press Select or upload resume, choose "Cloud and DevOps resume.docx" and press Attach resume. The typed values are still there.
@@ -63,8 +63,20 @@ Start the dev server and open the address it prints. Every step uses the sample 
 10. **Empty list.** Delete the remaining records one by one to see "You have no application records yet." Refresh the page to bring the sample data back.
 11. **Keyboard and phone width.** Press Tab on any page: the first stop is a "Skip to main content" link. Below 768 pixels wide the sidebar becomes rows of links and the records table scrolls inside its panel.
 
+### Other areas
+
+Each area starts from its sidebar link. Its feature README lists the routes and states it shows.
+
+| Area            | Start at           | Routes and states                     |
+| --------------- | ------------------ | ------------------------------------- |
+| Resumes         | `/resumes`         | `src/features/resumes/README.md`      |
+| Matching        | `/matching`        | `src/features/matching/README.md`     |
+| Recommendations | `/recommendations` | The feature README is not written yet |
+
 ## Known limitations
 
-- All five application record screens are built. The other three areas arrive when their owners build them.
-- The resume list is three sample resumes kept in the applications feature until Hira's resumes feature provides the real list. A picked file keeps only its name; nothing is uploaded or read.
-- Data will not survive a page refresh. This is by design for the Inception prototype.
+- All four areas run on their own sample data, and no area reads another area's data yet.
+- The resume step in Applications offers three sample resumes kept in the applications feature, not the list from the resumes feature. A picked file keeps only its name; nothing is uploaded or read.
+- Some links lead to Page not found because their screens are not built: `/resumes/:id`, `/resumes/:id/manual`, and the Progress Summary and Reminders & Follow-ups tabs in Recommendations.
+- `npm run format:check` fails on 18 files in `src/features/matching/` and `src/features/recommendations/`.
+- Data does not survive a page refresh. This is by design for the Inception prototype.

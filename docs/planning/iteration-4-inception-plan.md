@@ -1,6 +1,6 @@
 # Iteration 4: Inception UI Prototype
 
-Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: Increments 1 to 9b built and verified; SCRUM-276 complete. Teammate integration (Increment 10) next.
+Jira parent: SCRUM-274. Dates: October 13 to 20, 2026. Plan drafted October 16, 2026. Status: closed. The Inception Release was submitted on 2026-10-20. Increments 1 to 10 are done; increments 11 and 12 did not run before submission.
 
 ## 1. Goals
 
@@ -111,9 +111,9 @@ Testing: Vitest and React Testing Library. Seams under test: the reducer, the va
 | 8 | 276.6 | Done 2026-10-19: Resume Upload and Selection as a step inside the create and edit forms: three stand-in sample resumes, a PDF or DOCX picker that keeps only the file name, Attach and Cancel, typed values preserved, focus moved into the step and back; `.field` and the form panels now let wide controls shrink on phones | build, lint, 50 tests, format check pass; checked in Chrome at 1280 and 375 px wide with real PDF and PNG files | 2.5 h |
 | 9 | 276.7 | Done 2026-10-19: end-to-end workflow test through the shell, the three missing coverage cases, the coverage table above, the README demo script, and the code, React and accessibility reviews | build, lint, 53 tests, format check pass; demo script followed in Chrome | 2.5 h |
 | 9b | 276.7 | Done 2026-10-19: review fixes. Every page sets a browser title through `PageHeader`; focus moves to the page content after navigation; the current sidebar item stays marked in high contrast mode; the edit form resets when the record changes; dashboard links are tested; ADRs 0001 to 0005 marked Proposed pending team review. Deferred to Increment 11: dashboard line length on wide screens, sidebar hover contrast, sidebar text alignment | build, lint, 58 tests, format check pass; titles, focus and forced colours checked in Chrome | 1 h |
-| 10 | 280 | Integrate teammate modules, resolve contracts | every route renders | depends on team |
-| 11 | 280 | Quality gate: /code-review, /simplify, antislop Delivery Gate, accessibility | reports, fixes | 2 h |
-| 12 | 280 | Demo readiness: README, known limitations, Jira updates identified | fresh clone runs | 1 h |
+| 10 | 280 | Done 2026-10-28: resumes and recommendations integrated on 2026-10-20, with a fix to the recommendations icon path and route tests; matching merged on 2026-10-28, after submission. Each area runs on its own sample data; the cross-feature contracts in section 4 are not wired yet | build, lint and 119 tests pass on 2026-11-02; format check fails on 18 matching and recommendations files | depends on team |
+| 11 | 280 | Not run before submission. Planned: /code-review, /simplify, antislop Delivery Gate, accessibility | reports, fixes | 2 h |
+| 12 | 280 | Not run before submission. The README's demo script and known limitations were brought up to date on 2026-11-02 | fresh clone runs | 1 h |
 
 Each increment: explain files first, implement, verify, summarize, stop for approval.
 
