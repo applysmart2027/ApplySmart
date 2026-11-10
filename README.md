@@ -1,17 +1,18 @@
 # ApplySmart
 
-ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. This repository holds the Inception Release prototype: a navigable React interface with hard-coded data and no backend.
+ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface, which still runs on hard-coded sample data. The `backend/` folder holds the Django project that will serve that data; it has no database or endpoints yet.
 
 ## Functional areas and owners
 
-| Area | Owner | Code |
-|---|---|---|
-| Job Discovery and Application Tracking | Anthony Vydysh | `frontend/src/features/applications/` |
-| Resume Management and Parsing | Hira Ahmad | `frontend/src/features/resumes/` |
-| Resume Matching and Gap Analysis | Nicolas Mesti | `frontend/src/features/matching/` |
-| Recommendations, Analytics and Follow-ups | Nikole Phipps Santos | `frontend/src/features/recommendations/` |
+| Area | Owner | Frontend | Backend |
+|---|---|---|---|
+| Job Discovery and Application Tracking | Anthony Vydysh | `frontend/src/features/applications/` | `backend/applications/` |
+| Resume Management and Parsing | Hira Ahmad | `frontend/src/features/resumes/` | `backend/resumes/` |
+| Resume Matching and Gap Analysis | Nicolas Mesti | `frontend/src/features/matching/` | `backend/matching/` |
+| Recommendations, Analytics and Follow-ups | Nikole Phipps Santos | `frontend/src/features/recommendations/` | `backend/recommendations/` |
+| Accounts: sign-in and the signed-in student | Anthony Vydysh | | `backend/accounts/` |
 
-The shell, dashboard, and routing under `frontend/src/app/` are shared.
+The shell, dashboard, and routing under `frontend/src/app/` and the project settings under `backend/applysmart/` are shared.
 
 ## Run the prototype
 
@@ -22,7 +23,7 @@ npm install
 npm run dev
 ```
 
-[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request.
+[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run the checks.
 
 ## Documents
 
