@@ -1,6 +1,6 @@
 # ApplySmart
 
-ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface, which still runs on hard-coded sample data. The `backend/` folder holds the Django project that will serve that data; it has no database or endpoints yet.
+ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface, which still runs on hard-coded sample data. The `backend/` folder holds the Django project and its PostgreSQL database, which run in Docker; so far the backend answers only a health check at `/api/health/`.
 
 ## Functional areas and owners
 
@@ -14,16 +14,28 @@ ApplySmart helps students keep track of their job, internship, and co-op applica
 
 The shell, dashboard, and routing under `frontend/src/app/` and the project settings under `backend/applysmart/` are shared.
 
-## Run the prototype
+## Run the app
+
+You need Docker Desktop for the backend and Node.js 24 for the frontend. Start the backend and its database from the repository root:
 
 ```bash
 git clone https://github.com/applysmart2027/ApplySmart.git
-cd ApplySmart/frontend
+cd ApplySmart
+cp .env.example .env
+docker compose up --build
+```
+
+In PowerShell, copy the settings with `Copy-Item .env.example .env`. Then start the frontend in a second terminal:
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run the backend and its database with Docker.
+Open http://localhost:5173. The screens still use sample data; requests to `/api/` go to the backend.
+
+[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run its tests.
 
 ## Documents
 
