@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run the checks.
+[frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run the backend and its database with Docker.
 
 ## Documents
 

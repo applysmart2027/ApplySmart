@@ -1,6 +1,6 @@
 # ApplySmart backend
 
-The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, one empty app per subsystem and a health endpoint, `GET /api/health/`, which returns `{"status": "ok"}`. There is no database connection or data yet.
+The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, one empty app per subsystem and a health endpoint, `GET /api/health/`, which returns `{"status": "ok"}`. Docker Compose runs it with a PostgreSQL 18 database, which holds only Django's own sign-in and session tables so far.
 
 ## Apps
 
@@ -38,9 +38,32 @@ Every app has the same five files, one per layer of ADR-0006.
 | Add a field to a table | `models.py`, then run `python manage.py makemigrations <app>` and commit the new file in `<app>/migrations/` |
 | Add an endpoint | The view in `api.py`, and its path in `applysmart/urls.py` |
 
-## Run the checks and tests
+## Run with Docker
 
-You need Python 3.13. These commands were run on Python 3.13.18 on Linux:
+Docker runs the backend and a PostgreSQL 18 database together, so you do not need Python or PostgreSQL on your machine. You need Docker Desktop with Docker Compose. These commands were run with Docker Desktop on Windows.
+
+From the repository root, copy the example settings once, then start both containers:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+In PowerShell, the copy command is `Copy-Item .env.example .env`. The backend applies the migrations and then serves on port 8000. Open http://localhost:8000/api/health/ to see `{"status": "ok"}`.
+
+Run the tests in a second terminal:
+
+```bash
+docker compose run --rm backend python manage.py test
+```
+
+Any other Django command runs the same way: `docker compose run --rm backend python manage.py <command>`. Code changes in `backend/` reload without a rebuild; after a change to `requirements.txt`, start again with `docker compose up --build`.
+
+`docker compose down` stops the containers and keeps the database. `docker compose down -v` also deletes the database.
+
+## Run without Docker
+
+You need Python 3.13. Without a PostgreSQL server of your own, `check` and `test` work but `migrate` and `runserver` fail. These commands were run on Python 3.13.18 on Linux:
 
 ```bash
 cd backend
@@ -70,7 +93,7 @@ Put the tests for your app in `<app>/tests.py`. The health endpoint test is in `
 
 ## Settings
 
-`applysmart/settings.py` reads every value from environment variables. Django stops with a `KeyError` when a required one is missing.
+`applysmart/settings.py` reads every value from environment variables. Django stops with a `KeyError` when a required one is missing. With Docker, the values come from `.env`, and `compose.yaml` sets `POSTGRES_HOST` to `db`.
 
 | Variable | Required | Default |
 |---|---|---|
@@ -95,6 +118,4 @@ Put the tests for your app in `<app>/tests.py`. The health endpoint test is in `
 
 ## Known limitations
 
-- `migrate` and `runserver` fail because no PostgreSQL database is set up yet.
 - Every app is empty, so the health endpoint is the only endpoint.
-- The tests run on your machine only; there is no Docker command for them yet.
