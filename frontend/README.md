@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Open the address Vite prints, normally http://localhost:5173.
+Open the address Vite prints, normally http://localhost:5173. The dev server forwards every request under `/api/` to the backend on port 8000. To get answers there, start the backend first with `docker compose up` from the repository root, as `backend/README.md` describes.
 
 ## Scripts
 

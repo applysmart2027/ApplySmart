@@ -49,7 +49,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-In PowerShell, the copy command is `Copy-Item .env.example .env`. The backend applies the migrations and then serves on port 8000. Open http://localhost:8000/api/health/ to see `{"status": "ok"}`.
+In PowerShell, the copy command is `Copy-Item .env.example .env`. The backend applies the migrations and then serves on port 8000. Open http://localhost:8000/api/health/ to see `{"status": "ok"}`. While the frontend dev server runs, the same endpoint answers at http://localhost:5173/api/health/, because Vite forwards `/api/` to port 8000.
 
 Run the tests in a second terminal:
 
