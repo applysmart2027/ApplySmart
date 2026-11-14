@@ -91,7 +91,7 @@ Each code increment follows the build protocol in `CLAUDE.md`: plan, approval, b
 | 3 | Collaboration `Create Application Record` with `Collaboration Overview`, `Structural Overview` and `Behavioural Overview` diagrams | SCRUM-29 | 2 | Diagrams match section 5; committed to VPository |
 | 4 | Deployment diagram of the AWS target, with the local Docker runtime noted | SCRUM-75 | 1 | Every executable element allocated to a node |
 | 5 | Backend scaffold: Django project, `compose.yaml`, PostgreSQL, a health endpoint, the test runner | SCRUM-322 | 1 | `docker compose up` from a fresh clone; tests pass |
-| 6 | Sign-in for seeded students: session login and logout endpoints, `current_student`, a sign-in screen | SCRUM-26 | 5, O1 | Tests for valid, invalid and missing credentials |
+| 6 | Sign-in for seeded students: session login and logout endpoints, `current_student`, a sign-in screen | SCRUM-332 | 5, O1 | Tests for valid, invalid and missing credentials |
 | 7 | Create and list application records: domain, service, repository, migration, API, tests | SCRUM-18, SCRUM-20, SCRUM-21 | 5, 6, D5 | Tests for valid, invalid and cross-student requests |
 | 8 | Frontend: the list and the create form use the API; the other screens keep their current behaviour (O6) | SCRUM-18 | 7 | Existing tests updated and passing; manual run through sign-in, create, refresh |
 | 9 | Release check: fresh clone runs, READMEs and known limitations current, traceability row filled, source archive built | none yet | 8 | Demo script followed on a clean machine |
@@ -134,18 +134,17 @@ Hira coordinates the report. Anthony drafts:
 
 ## 10. Decisions pending
 
-- O1 Sign-in scope. Recommended: seeded student accounts with session sign-in and sign-out, no registration. Ownership then rests on a real identity. Alternative: a fixed development student, which is less work but leaves the ownership rule untested.
+- O1 Decided 2026-11-13: seeded student accounts with session sign-in and sign-out, no registration (SCRUM-332).
 - O2 Decided 2026-11-09: Anthony builds the backend scaffold in `backend/` and `compose.yaml` (SCRUM-322). Nicolas leads backend integration in the report's responsibility matrix and is fine with this.
 - O3 How the React build is served on AWS: from S3 behind CloudFront with `/api/` routed to the load balancer, or by the backend container. Either way the browser must see one origin for the session cookie (ADR-0007). This changes the deployment diagram.
 - O4 Whether ADR-0006 to ADR-0008 are accepted, changed or replaced. Since 2026-11-09 the backend is built on them while the team review is still open.
-- O5 D5 (application status values) and D6 (optional contact fields), open since Inception; the database schema depends on both.
+- O5 Decided 2026-11-13. D5: the six statuses stay as they are (Saved, Applied, Interview, Offer, Rejected, Withdrawn). D6: contact name and contact email are both optional.
 - O6 What the details, edit and delete screens do once the list comes from the API. Recommended: they keep their prototype behaviour on the loaded records, and the known limitations say changes there are not saved. Backend update and delete are a stretch goal.
 
 ## 11. Risks
 
 - The team does not decide O1 to O5 by 2026-11-04. Every later increment moves with it.
 - Python, Django and DRF are new to most of the team; increments 5 to 7 are the first backend code anyone writes in this project.
-- Django 6.1 and DRF 3.18 compatibility is unverified until increment 5 installs them.
 - Docker on Windows needs WSL 2, and the local folder path contains `!`, which some tools mishandle.
 - The report's iteration goals promise a deployed application; until the team rewrites them, the report and the increment disagree.
 

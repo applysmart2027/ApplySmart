@@ -1,6 +1,6 @@
 # ApplySmart frontend
 
-The React prototype for ApplySmart. It runs without a backend: all data is hard-coded in the browser and resets on refresh.
+The React prototype for ApplySmart. Sign-in goes through the backend. Every screen after sign-in uses data hard-coded in the browser, which resets on refresh.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Open the address Vite prints, normally http://localhost:5173. The dev server forwards every request under `/api/` to the backend on port 8000. To get answers there, start the backend first with `docker compose up` from the repository root, as `backend/README.md` describes.
+Open the address Vite prints, normally http://localhost:5173. The dev server forwards every request under `/api/` to the backend on port 8000. Start the backend first with `docker compose up` from the repository root, as `backend/README.md` describes. Without it the sign-in screen cannot sign you in.
 
 ## Scripts
 
@@ -49,7 +49,7 @@ Vitest runs in a jsdom environment with React Testing Library. `src/setupTests.t
 
 ## Demo script
 
-Start the dev server and open the address it prints. Every step uses the sample data, which resets when the page is refreshed.
+Start the backend and the dev server, and open the address it prints. The Sign in screen comes first. Press Sign in with both fields empty to see the missing-fields message, then sign in as `maya.okafor` with a wrong password to see the incorrect-details message, then with `applysmart-demo`. A refresh keeps you signed in. Every step below uses the sample data, which resets when the page is refreshed.
 
 1. **Dashboard.** The four areas are listed, and the sidebar marks Dashboard as current. Steps 2 to 11 cover Applications; the other three areas are listed under Other areas below.
 2. **Application Records.** Open Applications. Search for "lakeshore" to narrow the table to one row, then for "astronaut" to see the no-matches message, and press Clear search and filters. Set Status to Offer, then back to All statuses, and sort by employer.
@@ -75,6 +75,7 @@ Each area starts from its sidebar link. Its feature README lists the routes and 
 
 ## Known limitations
 
+- There is no sign-out button. Clearing the site's cookies in the browser signs you out.
 - All four areas run on their own sample data, and no area reads another area's data yet.
 - The resume step in Applications offers three sample resumes kept in the applications feature, not the list from the resumes feature. A picked file keeps only its name; nothing is uploaded or read.
 - Some links lead to Page not found because their screens are not built: `/resumes/:id`, `/resumes/:id/manual`, and the Progress Summary and Reminders & Follow-ups tabs in Recommendations.

@@ -1,6 +1,6 @@
 # ApplySmart backend
 
-The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, one empty app per subsystem and a health endpoint, `GET /api/health/`, which returns `{"status": "ok"}`. Docker Compose runs it with a PostgreSQL 18 database, which holds only Django's own sign-in and session tables so far.
+The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, sign-in in `accounts/`, a health endpoint, and one empty app for each other subsystem. Docker Compose runs it with a PostgreSQL 18 database, which holds only Django's own user and session tables so far.
 
 ## Apps
 
@@ -15,6 +15,30 @@ Each app is one subsystem from ADR-0006. The root README lists who owns each one
 | `recommendations/` | Job recommendations, progress analytics and follow-up reminders |
 
 Work only in your own app. To use another app's data, call a function in its `services.py` and agree with its owner what it returns; never import its models or repository.
+
+## Endpoints
+
+| Request | Answer |
+|---|---|
+| `GET /api/health/` | 200 and `{"status": "ok"}` |
+| `GET /api/session/` | 200 and the signed-in student as `{"id", "name", "email"}`, or 403 when nobody is signed in. It also sets the `csrftoken` cookie |
+| `POST /api/session/` with `{"username", "password"}` | 200, the student, and a session cookie. 400 when a field is missing or the username or password is wrong |
+| `DELETE /api/session/` | 204, and the student is signed out |
+
+Every endpoint needs a signed-in student unless its view sets `permission_classes = [AllowAny]`; `REST_FRAMEWORK` in `settings.py` makes that the default. A browser request that changes data (POST, PUT, PATCH, DELETE) must send the value of the `csrftoken` cookie in an `X-CSRFToken` header, or Django answers 403.
+
+To know which student a request is for, call `current_student(request)` from `accounts/services.py`. It returns a `Student` with `id`, `name` and `email`, or `None` when nobody is signed in.
+
+## Sample students
+
+There is no registration. `docker compose up` runs `python manage.py seed_students`, which creates two students if they do not exist yet:
+
+| Username | Name |
+|---|---|
+| `maya.okafor` | Maya Okafor |
+| `daniel.reyes` | Daniel Reyes |
+
+Both use the password `applysmart-demo`. Running the command again changes nothing.
 
 ## Where code goes
 
@@ -49,7 +73,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-In PowerShell, the copy command is `Copy-Item .env.example .env`. The backend applies the migrations and then serves on port 8000. Open http://localhost:8000/api/health/ to see `{"status": "ok"}`. While the frontend dev server runs, the same endpoint answers at http://localhost:5173/api/health/, because Vite forwards `/api/` to port 8000.
+In PowerShell, the copy command is `Copy-Item .env.example .env`. The backend applies the migrations, creates the sample students, and then serves on port 8000. Open http://localhost:8000/api/health/ to see `{"status": "ok"}`. While the frontend dev server runs, the same endpoint answers at http://localhost:5173/api/health/, because Vite forwards `/api/` to port 8000.
 
 Run the tests in a second terminal:
 
@@ -63,14 +87,14 @@ Any other Django command runs the same way: `docker compose run --rm backend pyt
 
 ## Run without Docker
 
-You need Python 3.13. Without a PostgreSQL server of your own, `check` and `test` work but `migrate` and `runserver` fail. These commands were run on Python 3.13.18 on Linux:
+You need Python 3.13 and a PostgreSQL server. The tests create and drop their own database, so the database user needs permission to create databases. Without a server, only `check` works. These commands were run on Python 3.13.18 with PostgreSQL 16 on Linux:
 
 ```bash
 cd backend
 python3.13 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export DJANGO_SECRET_KEY=dev-only POSTGRES_PASSWORD=dev-only
+export DJANGO_SECRET_KEY=dev-only POSTGRES_PASSWORD=<database password>
 python manage.py check
 python manage.py test
 ```
@@ -84,12 +108,12 @@ cd backend
 py -3.13 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-$env:DJANGO_SECRET_KEY = "dev-only"; $env:POSTGRES_PASSWORD = "dev-only"
+$env:DJANGO_SECRET_KEY = "dev-only"; $env:POSTGRES_PASSWORD = "<database password>"
 python manage.py check
 python manage.py test
 ```
 
-Put the tests for your app in `<app>/tests.py`. The health endpoint test is in `applysmart/tests.py`.
+Put the tests for your app in `<app>/tests.py`, as `accounts/tests.py` does. The health endpoint test is in `applysmart/tests.py`.
 
 ## Settings
 
@@ -115,7 +139,9 @@ Put the tests for your app in `<app>/tests.py`. The health endpoint test is in `
 | `python manage.py makemigrations <app>` | Writes a migration file for model changes in that app |
 | `python manage.py migrate` | Applies migrations to the database |
 | `python manage.py runserver` | Starts the development server on port 8000 |
+| `python manage.py seed_students` | Creates the sample students that do not exist yet |
 
 ## Known limitations
 
-- Every app is empty, so the health endpoint is the only endpoint.
+- Only `accounts/` has code. The other four apps are empty.
+- There is no registration, password reset or account page. The sample students are the only accounts.

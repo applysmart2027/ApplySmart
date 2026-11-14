@@ -26,6 +26,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'applysmart.urls'
 
+# Every endpoint needs a signed-in student unless its view says otherwise.
+# JSON only: the project has no templates for DRF's browsable API.
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
+}
+
 # The variable names match the official postgres image, so one .env file configures both containers.
 DATABASES = {
     'default': {
