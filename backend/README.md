@@ -1,6 +1,6 @@
 # ApplySmart backend
 
-The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, sign-in in `accounts/`, a health endpoint, and one empty app for each other subsystem. Docker Compose runs it with a PostgreSQL 18 database, which holds only Django's own user and session tables so far.
+The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, sign-in in `accounts/`, saving and listing application records in `applications/`, a health endpoint, and one empty app for each other subsystem. Docker Compose runs it with a PostgreSQL 18 database.
 
 ## Apps
 
@@ -24,8 +24,21 @@ Work only in your own app. To use another app's data, call a function in its `se
 | `GET /api/session/` | 200 and the signed-in student as `{"id", "name", "email"}`, or 403 when nobody is signed in. It also sets the `csrftoken` cookie |
 | `POST /api/session/` with `{"username", "password"}` | 200, the student, and a session cookie. 400 when a field is missing or the username or password is wrong |
 | `DELETE /api/session/` | 204, and the student is signed out |
+| `GET /api/applications/` | 200 and the signed-in student's application records, oldest first |
+| `POST /api/applications/` with a record | 201 and the saved record with its `id`. 400 with one message per invalid field, keyed by the JSON field name |
 
 Every endpoint needs a signed-in student unless its view sets `permission_classes = [AllowAny]`; `REST_FRAMEWORK` in `settings.py` makes that the default. A browser request that changes data (POST, PUT, PATCH, DELETE) must send the value of the `csrftoken` cookie in an `X-CSRFToken` header, or Django answers 403.
+
+An application record is JSON with these fields. The API adds `id` to the records it returns. The rules and error messages match the frontend's `validation.ts`.
+
+| Field | Accepts |
+|---|---|
+| `jobTitle`, `employer` | Any text; required |
+| `postingUrl` | A web address starting with `http://` or `https://`, or an empty string |
+| `status` | `Saved`, `Applied`, `Interview`, `Offer`, `Rejected` or `Withdrawn` |
+| `deadline` | A date like `2026-11-30`, or `null` |
+| `contactEmail` | An address like `name@example.com`, or an empty string |
+| `contactName`, `notes`, `resumeId`, `resumeName` | Any text, or an empty string |
 
 To know which student a request is for, call `current_student(request)` from `accounts/services.py`. It returns a `Student` with `id`, `name` and `email`, or `None` when nobody is signed in.
 
@@ -44,7 +57,7 @@ Both use the password `applysmart-demo`. Running the command again changes nothi
 
 Every app has the same five files, one per layer of ADR-0006.
 
-| File | Put here | Planned example |
+| File | Put here | Example in `applications/` |
 |---|---|---|
 | `api.py` | HTTP endpoints: read the request, call a service, return JSON | `POST /api/applications/` |
 | `services.py` | One function per use case. It checks the student may do this and coordinates the work | `create_application_record(student, draft)` |
@@ -143,5 +156,7 @@ Put the tests for your app in `<app>/tests.py`, as `accounts/tests.py` does. The
 
 ## Known limitations
 
-- Only `accounts/` has code. The other four apps are empty.
+- Only `accounts/` and `applications/` have code. The other three apps are empty.
+- Application records can be created and listed, not changed or deleted.
+- `resumeId` and `resumeName` are stored as the frontend sends them. Nothing checks them against a stored resume, because `resumes/` stores none yet.
 - There is no registration, password reset or account page. The sample students are the only accounts.

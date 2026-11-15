@@ -1,6 +1,6 @@
 # ApplySmart
 
-ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface. It signs students in through the backend; every screen after sign-in still runs on hard-coded sample data. The `backend/` folder holds the Django project and its PostgreSQL database, which run in Docker; so far the backend handles sign-in and a health check.
+ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface. It signs students in through the backend; every screen after sign-in still runs on hard-coded sample data. The `backend/` folder holds the Django project and its PostgreSQL database, which run in Docker; so far the backend handles sign-in, a health check, and saving and listing application records. The frontend does not call the records endpoints yet.
 
 ## Functional areas and owners
 

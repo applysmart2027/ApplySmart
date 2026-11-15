@@ -61,7 +61,7 @@ This is the design the Interaction Model records and the code follows. Names are
 | Presentation, backend | `ApplicationRecordsView`, `ApplicationRecordSerializer` | Accept `POST /api/applications/` and `GET /api/applications/`, turn JSON into a draft and back |
 | Application | `create_application_record(student, draft)`, `list_application_records(student)` | Require a signed-in student, apply the domain rules, save, return the record |
 | Domain | `ApplicationRecord`, `ApplicationStatus` | Job title and employer required, posting URL and contact email checked, status from the agreed list (D5), record owned by exactly one student |
-| Infrastructure | `ApplicationRecordModel`, `repository.save`, `repository.list_for_student` | Store and load records in PostgreSQL |
+| Infrastructure | `ApplicationRecordModel`, `repository.save`, `repository.list_for_owner` | Store and load records in PostgreSQL |
 | Accounts | `current_student(request)` | Identify the signed-in student for the request |
 
 Main success scenario for the sequence diagram:
