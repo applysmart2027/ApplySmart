@@ -19,12 +19,9 @@ class ApplicationStatus(Enum):
 
 
 @dataclass(frozen=True)
-class Deadline:
-    date: date
-
-
-@dataclass(frozen=True)
 class Contact:
+    """Both fields empty means the student recorded no contact."""
+
     name: str
     email: str
 
@@ -60,8 +57,8 @@ class ApplicationRecord:
     posting_url: str
     # One of the ApplicationStatus values; validate() rejects anything else.
     status: str
-    deadline: Deadline | None
-    contact: Contact | None
+    deadline: date | None
+    contact: Contact
     # Kept as the frontend sent them: resumes/ stores no resumes yet to look them up in.
     resume_id: str
     resume_name: str
@@ -82,7 +79,7 @@ class ApplicationRecord:
                 )
         if self.status not in ApplicationStatus:
             errors['status'] = 'Choose one of the listed statuses.'
-        if self.contact and self.contact.email and not EMAIL.fullmatch(self.contact.email):
+        if self.contact.email and not EMAIL.fullmatch(self.contact.email):
             errors['contact_email'] = (
                 'Enter an email address like name@example.com, or leave this blank.'
             )

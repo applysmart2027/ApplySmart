@@ -36,7 +36,7 @@ An application record is JSON with these fields. The API adds `id` to the record
 | `jobTitle`, `employer` | Any text; required |
 | `postingUrl` | A web address starting with `http://` or `https://`, or an empty string |
 | `status` | `Saved`, `Applied`, `Interview`, `Offer`, `Rejected` or `Withdrawn` |
-| `deadline` | A date like `2026-11-30`, or `null` |
+| `deadline` | A date like `2026-11-30`, or an empty string |
 | `contactEmail` | An address like `name@example.com`, or an empty string |
 | `contactName`, `notes`, `resumeId`, `resumeName` | Any text, or an empty string |
 

@@ -1,6 +1,6 @@
 from dataclasses import replace
 
-from .domain import ApplicationRecord, Contact, Deadline
+from .domain import ApplicationRecord, Contact
 from .models import ApplicationRecordModel
 
 
@@ -16,7 +16,6 @@ def list_for_owner(owner):
 
 
 def _to_domain(row):
-    has_contact = row.contact_name or row.contact_email
     return ApplicationRecord(
         id=row.pk,
         owner_id=row.owner_id,
@@ -24,8 +23,8 @@ def _to_domain(row):
         employer=row.employer,
         posting_url=row.posting_url,
         status=row.status,
-        deadline=Deadline(row.deadline) if row.deadline else None,
-        contact=Contact(row.contact_name, row.contact_email) if has_contact else None,
+        deadline=row.deadline,
+        contact=Contact(row.contact_name, row.contact_email),
         resume_id=row.resume_id,
         resume_name=row.resume_name,
         notes=row.notes,
@@ -40,9 +39,9 @@ def _to_model(record):
         employer=record.employer,
         posting_url=record.posting_url,
         status=record.status,
-        deadline=record.deadline.date if record.deadline else None,
-        contact_name=record.contact.name if record.contact else '',
-        contact_email=record.contact.email if record.contact else '',
+        deadline=record.deadline,
+        contact_name=record.contact.name,
+        contact_email=record.contact.email,
         notes=record.notes,
         resume_id=record.resume_id,
         resume_name=record.resume_name,

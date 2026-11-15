@@ -12,6 +12,12 @@ def optional_text(source=None):
     return serializers.CharField(source=source, allow_blank=True, default='')
 
 
+class OptionalDateField(serializers.DateField):
+    # The form sends '' for no deadline, which DRF's DateField rejects as a bad format.
+    def to_internal_value(self, value):
+        return None if value == '' else super().to_internal_value(value)
+
+
 class ApplicationRecordSerializer(serializers.Serializer):
     """Maps between the frontend's camelCase JSON and the domain objects."""
 
@@ -19,7 +25,7 @@ class ApplicationRecordSerializer(serializers.Serializer):
     employer = optional_text()
     postingUrl = optional_text(source='posting_url')
     status = optional_text()
-    deadline = serializers.DateField(allow_null=True, default=None)
+    deadline = OptionalDateField(default=None)
     resumeId = optional_text(source='resume_id')
     resumeName = optional_text(source='resume_name')
     notes = optional_text()
@@ -42,12 +48,12 @@ class ApplicationRecordSerializer(serializers.Serializer):
             'employer': record.employer,
             'postingUrl': record.posting_url,
             'status': record.status,
-            'deadline': record.deadline.date.isoformat() if record.deadline else None,
+            'deadline': record.deadline.isoformat() if record.deadline else '',
             'resumeId': record.resume_id,
             'resumeName': record.resume_name,
             'notes': record.notes,
-            'contactName': record.contact.name if record.contact else '',
-            'contactEmail': record.contact.email if record.contact else '',
+            'contactName': record.contact.name,
+            'contactEmail': record.contact.email,
         }
 
 

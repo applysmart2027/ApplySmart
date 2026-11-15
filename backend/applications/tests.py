@@ -3,12 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TestCase
 
-from .domain import (
-    ApplicationRecord,
-    ApplicationValidationError,
-    Contact,
-    Deadline,
-)
+from .domain import ApplicationRecord, ApplicationValidationError, Contact
 
 
 def record(**changes):
@@ -58,7 +53,7 @@ class ApplicationRecordRulesTests(SimpleTestCase):
             self.errors(contact=Contact(name='Priya Raman', email='priya at northwind')),
             {'contact_email': message},
         )
-        self.assertEqual(self.errors(contact=None), {})
+        self.assertEqual(self.errors(contact=Contact(name='', email='')), {})
 
     def test_status_must_be_one_of_the_six(self):
         self.assertEqual(
@@ -66,7 +61,7 @@ class ApplicationRecordRulesTests(SimpleTestCase):
         )
 
     def test_deadline_is_optional(self):
-        self.assertEqual(self.errors(deadline=Deadline(date(2026, 11, 30))), {})
+        self.assertEqual(self.errors(deadline=date(2026, 11, 30)), {})
 
 
 NEW_APPLICATION = {
@@ -107,10 +102,10 @@ class ApplicationRecordsApiTests(TestCase):
         optional = ['postingUrl', 'resumeId', 'resumeName', 'notes', 'contactName', 'contactEmail']
         blank = dict.fromkeys(optional, '')
 
-        response = self.create(NEW_APPLICATION | blank | {'deadline': None})
+        response = self.create(NEW_APPLICATION | blank | {'deadline': ''})
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json()['deadline'], None)
+        self.assertEqual(response.json()['deadline'], '')
 
     def test_invalid_fields_get_one_message_each_and_nothing_is_saved(self):
         self.client.force_login(self.maya)
