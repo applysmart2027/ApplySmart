@@ -25,7 +25,9 @@ export function AppShell() {
         <Link to="/" className="shell-brand">
           ApplySmart
         </Link>
-        <p className="shell-note">Prototype with sample data</p>
+        <p className="shell-note">
+          Prototype. New application records are saved; everything else is sample data.
+        </p>
       </header>
       <nav className="shell-nav" aria-label="Main">
         <ul>

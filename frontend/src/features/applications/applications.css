@@ -30,6 +30,11 @@
   padding: var(--space-6);
 }
 
+.edit-notice {
+  max-width: 40rem;
+  margin: 0 0 var(--space-6);
+}
+
 .application-form-group {
   display: grid;
   gap: var(--space-4);

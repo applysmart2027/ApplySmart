@@ -1,6 +1,6 @@
 # ApplySmart
 
-ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface. It signs students in through the backend; every screen after sign-in still runs on hard-coded sample data. The `backend/` folder holds the Django project and its PostgreSQL database, which run in Docker; so far the backend handles sign-in, a health check, and saving and listing application records. The frontend does not call the records endpoints yet.
+ApplySmart helps students keep track of their job, internship, and co-op applications and see how their resumes line up with the postings they apply to. The `frontend/` folder holds the React interface. It signs students in through the backend and keeps each student's application records there; the other screens still run on hard-coded sample data. The `backend/` folder holds the Django project and its PostgreSQL database, which run in Docker; so far the backend handles sign-in, a health check, and saving and listing application records.
 
 ## Functional areas and owners
 
@@ -33,7 +33,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 and sign in as `maya.okafor` or `daniel.reyes` with the password `applysmart-demo`. These are sample accounts the backend creates when it starts. After sign-in the screens still use sample data.
+Open http://localhost:5173 and sign in as `maya.okafor` or `daniel.reyes` with the password `applysmart-demo`. These are sample accounts the backend creates when it starts. Application records you create are saved; the other areas still use sample data.
 
 [frontend/README.md](frontend/README.md) lists every script and the checks to run before a pull request. [backend/README.md](backend/README.md) explains what each backend app is for, where code goes, and how to run its tests.
 

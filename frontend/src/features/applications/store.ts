@@ -2,14 +2,20 @@ import { createContext, useContext, type Dispatch } from 'react';
 import { restrictedApplicationId } from './sampleData';
 import type { ApplicationRecord } from './types';
 
+export type LoadStatus = 'loading' | 'ready' | 'failed';
+
 type ApplicationsAction =
-  { type: 'created' | 'updated'; record: ApplicationRecord } | { type: 'removed'; id: string };
+  | { type: 'loaded'; records: ApplicationRecord[] }
+  | { type: 'created' | 'updated'; record: ApplicationRecord }
+  | { type: 'removed'; id: string };
 
 export function applicationsReducer(
   records: ApplicationRecord[],
   action: ApplicationsAction,
 ): ApplicationRecord[] {
   switch (action.type) {
+    case 'loaded':
+      return action.records;
     case 'created':
       return [...records, action.record];
     case 'updated':
@@ -21,6 +27,7 @@ export function applicationsReducer(
 
 export const ApplicationsContext = createContext<{
   records: ApplicationRecord[];
+  status: LoadStatus;
   dispatch: Dispatch<ApplicationsAction>;
 } | null>(null);
 
@@ -31,7 +38,8 @@ export function useApplications() {
 }
 
 export function useApplication(id: string | undefined) {
-  const { records } = useApplications();
+  const { records, status } = useApplications();
+  if (status !== 'ready') return status;
   if (id === restrictedApplicationId) return 'denied';
   return records.find((r) => r.id === id) ?? 'not-found';
 }

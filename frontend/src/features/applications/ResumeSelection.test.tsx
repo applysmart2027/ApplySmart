@@ -12,8 +12,8 @@ function pickFile(fileName: string) {
   });
 }
 
-test('on create, a chosen resume is attached, the typed values stay, and it is saved', () => {
-  renderAt('/applications/new');
+test('on create, a chosen resume is attached, the typed values stay, and it is saved', async () => {
+  await renderAt('/applications/new');
   fill('Job title (required)', 'Data Engineer');
   fill('Employer (required)', 'Maplestone Robotics');
 
@@ -27,12 +27,14 @@ test('on create, a chosen resume is attached, the typed values stay, and it is s
   expect(screen.getByLabelText('Job title (required)')).toHaveValue('Data Engineer');
 
   submit('Save application');
-  fireEvent.click(screen.getByRole('link', { name: 'View Data Engineer at Maplestone Robotics' }));
+  fireEvent.click(
+    await screen.findByRole('link', { name: 'View Data Engineer at Maplestone Robotics' }),
+  );
   expect(detail('Resume')).toHaveTextContent('Cloud and DevOps resume.docx');
 });
 
-test('cancel returns to the form with the previous resume and the typed values', () => {
-  renderAt('/applications/app-1/edit');
+test('cancel returns to the form with the previous resume and the typed values', async () => {
+  await renderAt('/applications/app-1/edit');
   fill('Job title (required)', 'Senior Software Developer');
 
   submit('Change resume');
@@ -43,8 +45,8 @@ test('cancel returns to the form with the previous resume and the typed values',
   expect(screen.getByLabelText('Job title (required)')).toHaveValue('Senior Software Developer');
 });
 
-test('cancel on create returns to the form with nothing attached', () => {
-  renderAt('/applications/new');
+test('cancel on create returns to the form with nothing attached', async () => {
+  await renderAt('/applications/new');
   fill('Job title (required)', 'Data Engineer');
 
   submit('Select or upload resume');
@@ -55,8 +57,8 @@ test('cancel on create returns to the form with nothing attached', () => {
   expect(screen.getByLabelText('Job title (required)')).toHaveValue('Data Engineer');
 });
 
-test('on edit, the current resume is preselected and a new one is saved', () => {
-  renderAt('/applications/app-1/edit');
+test('on edit, the current resume is preselected and a new one is saved', async () => {
+  await renderAt('/applications/app-1/edit');
 
   submit('Change resume');
   expect(screen.getByRole('radio', { name: 'Software resume, September 2026.pdf' })).toBeChecked();
@@ -67,8 +69,8 @@ test('on edit, the current resume is preselected and a new one is saved', () => 
   expect(detail('Resume')).toHaveTextContent('General co-op resume.pdf');
 });
 
-test('a picked PDF is attached by its file name', () => {
-  renderAt('/applications/new');
+test('a picked PDF is attached by its file name', async () => {
+  await renderAt('/applications/new');
 
   submit('Select or upload resume');
   pickFile('cover-resume.pdf');
@@ -78,8 +80,8 @@ test('a picked PDF is attached by its file name', () => {
   expect(screen.getByText('cover-resume.pdf')).toBeInTheDocument();
 });
 
-test('a file that is not PDF or DOCX is refused', () => {
-  renderAt('/applications/new');
+test('a file that is not PDF or DOCX is refused', async () => {
+  await renderAt('/applications/new');
 
   submit('Select or upload resume');
   pickFile('photo.png');
@@ -89,8 +91,8 @@ test('a file that is not PDF or DOCX is refused', () => {
   expect(screen.getByRole('alert')).toHaveTextContent('Choose a resume or upload a file.');
 });
 
-test('focus moves into the step and back to the resume button', () => {
-  renderAt('/applications/new');
+test('focus moves into the step and back to the resume button', async () => {
+  await renderAt('/applications/new');
 
   submit('Select or upload resume');
   expect(screen.getByRole('radio', { name: 'Software resume, September 2026.pdf' })).toHaveFocus();

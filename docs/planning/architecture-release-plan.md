@@ -139,7 +139,7 @@ Hira coordinates the report. Anthony drafts:
 - O3 How the React build is served on AWS: from S3 behind CloudFront with `/api/` routed to the load balancer, or by the backend container. Either way the browser must see one origin for the session cookie (ADR-0007). This changes the deployment diagram.
 - O4 Whether ADR-0006 to ADR-0008 are accepted, changed or replaced. Since 2026-11-09 the backend is built on them while the team review is still open.
 - O5 Decided 2026-11-13. D5: the six statuses stay as they are (Saved, Applied, Interview, Offer, Rejected, Withdrawn). D6: contact name and contact email are both optional.
-- O6 What the details, edit and delete screens do once the list comes from the API. Recommended: they keep their prototype behaviour on the loaded records, and the known limitations say changes there are not saved. Backend update and delete are a stretch goal.
+- O6 Decided 2026-11-15: once the list comes from the API, the details, edit and delete screens keep their prototype behaviour on the loaded records. The edit and delete screens and the known limitations say changes there are not saved. Backend update and delete stay a stretch goal.
 
 ## 11. Risks
 

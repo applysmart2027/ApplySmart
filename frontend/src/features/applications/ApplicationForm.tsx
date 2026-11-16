@@ -16,10 +16,10 @@ export function ApplicationForm({
   initialDraft: ApplicationDraft;
   submitLabel: string;
   cancelTo: string;
-  onSave: (draft: ApplicationDraft) => void;
+  onSave: (draft: ApplicationDraft) => void | Promise<void>;
 }) {
   const [draft, setDraft] = useState(initialDraft);
-  const [submit, setSubmit] = useState<'idle' | 'attempted' | 'failed'>('idle');
+  const [submit, setSubmit] = useState<'idle' | 'attempted' | 'saving' | 'failed'>('idle');
   const [simulateFailure, setSimulateFailure] = useState(false);
   // 'returned' puts focus back on the resume button after the step closes.
   const [resumeStep, setResumeStep] = useState<'closed' | 'open' | 'returned'>('closed');
@@ -35,7 +35,7 @@ export function ApplicationForm({
     onChange: update,
   });
 
-  function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const firstInvalid = Object.keys(validateApplication(draft))[0];
@@ -49,7 +49,12 @@ export function ApplicationForm({
       return;
     }
 
-    onSave({ ...draft, jobTitle: draft.jobTitle.trim(), employer: draft.employer.trim() });
+    setSubmit('saving');
+    try {
+      await onSave({ ...draft, jobTitle: draft.jobTitle.trim(), employer: draft.employer.trim() });
+    } catch {
+      setSubmit('failed');
+    }
   }
 
   if (resumeStep === 'open') {
@@ -124,7 +129,7 @@ export function ApplicationForm({
         <Link to={cancelTo} className="button">
           Cancel
         </Link>
-        <button type="submit" className="button button-primary">
+        <button type="submit" className="button button-primary" disabled={submit === 'saving'}>
           {submitLabel}
         </button>
       </div>

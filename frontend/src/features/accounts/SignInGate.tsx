@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { csrfToken } from '../../shared/csrf';
 import { PageHeader } from '../../shared/ui/PageHeader';
 import './accounts.css';
 
@@ -33,8 +34,7 @@ function SignInPage({ onSignedIn }: { onSignedIn: () => void }) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Django sets this cookie on the session check and rejects a POST without it.
-        'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '',
+        'X-CSRFToken': csrfToken(),
       },
       body: JSON.stringify({ username, password }),
     }).catch(() => null);
