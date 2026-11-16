@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
+import { createApplication } from './api';
 import { ApplicationForm } from './ApplicationForm';
 import { useApplications } from './store';
 import type { ApplicationDraft } from './types';
@@ -29,8 +30,8 @@ export function CreateApplicationPage() {
         initialDraft={emptyDraft}
         submitLabel="Save application"
         cancelTo="/applications"
-        onSave={(draft) => {
-          dispatch({ type: 'created', record: { ...draft, id: crypto.randomUUID() } });
+        onSave={async (draft) => {
+          dispatch({ type: 'created', record: await createApplication(draft) });
           navigate('/applications');
         }}
       />

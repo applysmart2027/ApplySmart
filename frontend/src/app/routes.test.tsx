@@ -1,11 +1,13 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { ApplicationsProvider } from '../features/applications';
+import { fakeRecordsBackend } from '../features/applications/test-utils';
 import { ResumesProvider } from '../features/resumes';
 import { routes } from './routes';
 
 function renderAt(path: string) {
+  vi.stubGlobal('fetch', fakeRecordsBackend());
   render(
     <ApplicationsProvider>
       <ResumesProvider>
@@ -52,7 +54,7 @@ test('an unknown address shows page not found and links back to the dashboard', 
   expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument();
 });
 
-test('a student creates, views, edits and deletes an application from the dashboard', () => {
+test('a student creates, views, edits and deletes an application from the dashboard', async () => {
   renderAt('/');
   const click = (role: 'link' | 'button' | 'radio', name: string) =>
     fireEvent.click(screen.getByRole(role, { name }));
@@ -63,6 +65,7 @@ test('a student creates, views, edits and deletes an application from the dashbo
   const heading = () => screen.getByRole('heading', { level: 1 });
 
   click('link', 'Applications');
+  await screen.findByRole('table');
   click('link', 'New application');
   expect(heading()).toHaveTextContent('Create Application Record');
   expect(document.title).toBe('Create Application Record | ApplySmart');
@@ -73,9 +76,9 @@ test('a student creates, views, edits and deletes an application from the dashbo
   click('radio', 'Cloud and DevOps resume.docx');
   click('button', 'Attach resume');
   click('button', 'Save application');
-  expect(heading()).toHaveTextContent('Application Records');
-
-  click('link', 'View Data Engineer at Maplestone Robotics');
+  fireEvent.click(
+    await screen.findByRole('link', { name: 'View Data Engineer at Maplestone Robotics' }),
+  );
   expect(heading().textContent).toBe('Data Engineer');
   expect(detail('Resume')).toHaveTextContent('Cloud and DevOps resume.docx');
 

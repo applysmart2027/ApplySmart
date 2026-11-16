@@ -1,5 +1,5 @@
 import { fireEvent, screen, within } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { renderAt } from './test-utils';
 
 function jobTitlesInTable() {
@@ -9,8 +9,25 @@ function jobTitlesInTable() {
     .map((row) => within(row).getAllByRole('cell')[0].textContent);
 }
 
-test('the table shows each sample record with its employer, status and deadline', () => {
-  renderAt('/applications');
+test("the list shows the signed-in student's records from the backend", async () => {
+  const { fetchMock } = await renderAt('/applications');
+
+  expect(fetchMock).toHaveBeenCalledWith('/api/applications/');
+  expect(jobTitlesInTable()).toHaveLength(6);
+});
+
+test('when the records cannot be loaded the page says what to do next', async () => {
+  await renderAt('/applications', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+
+  expect(screen.getByText(/Your application records could not be loaded/)).toHaveTextContent(
+    'Your application records could not be loaded. Check that the backend is running, then reload the page.',
+  );
+  expect(screen.getByRole('link', { name: 'New application' })).toBeInTheDocument();
+  expect(screen.queryByRole('table')).not.toBeInTheDocument();
+});
+
+test('the table shows each sample record with its employer, status and deadline', async () => {
+  await renderAt('/applications');
 
   const row = screen.getByRole('row', { name: /Software Developer/ });
   expect(within(row).getByText('Halvorsen Analytics')).toBeInTheDocument();
@@ -20,8 +37,8 @@ test('the table shows each sample record with its employer, status and deadline'
   expect(within(undated).getByText('No deadline')).toBeInTheDocument();
 });
 
-test('search matches the employer or the job title, ignoring case', () => {
-  renderAt('/applications');
+test('search matches the employer or the job title, ignoring case', async () => {
+  await renderAt('/applications');
   const search = screen.getByRole('searchbox', { name: 'Search' });
 
   fireEvent.change(search, { target: { value: 'tamarack' } });
@@ -31,8 +48,8 @@ test('search matches the employer or the job title, ignoring case', () => {
   expect(jobTitlesInTable()).toEqual(['Cloud Engineer']);
 });
 
-test('the status filter shows only records with that status', () => {
-  renderAt('/applications');
+test('the status filter shows only records with that status', async () => {
+  await renderAt('/applications');
 
   fireEvent.change(screen.getByRole('combobox', { name: 'Status' }), {
     target: { value: 'Offer' },
@@ -41,8 +58,8 @@ test('the status filter shows only records with that status', () => {
   expect(jobTitlesInTable()).toEqual(['QA Automation Co-op']);
 });
 
-test('records sort by soonest deadline by default and by employer on request', () => {
-  renderAt('/applications');
+test('records sort by soonest deadline by default and by employer on request', async () => {
+  await renderAt('/applications');
 
   expect(jobTitlesInTable()).toEqual([
     'Front-end Developer Intern',
@@ -67,8 +84,8 @@ test('records sort by soonest deadline by default and by employer on request', (
   ]);
 });
 
-test('a search with no matches says so and can be cleared', () => {
-  renderAt('/applications');
+test('a search with no matches says so and can be cleared', async () => {
+  await renderAt('/applications');
 
   fireEvent.change(screen.getByRole('searchbox', { name: 'Search' }), {
     target: { value: 'astronaut' },
@@ -80,8 +97,8 @@ test('a search with no matches says so and can be cleared', () => {
   expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('');
 });
 
-test('with no records the page offers to create the first one', () => {
-  renderAt('/applications', []);
+test('with no records the page offers to create the first one', async () => {
+  await renderAt('/applications', []);
 
   expect(screen.getByText('You have no application records yet.')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Create your first application' })).toHaveAttribute(
@@ -91,8 +108,8 @@ test('with no records the page offers to create the first one', () => {
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });
 
-test('each row links to that record and the page links to a new record', () => {
-  renderAt('/applications');
+test('each row links to that record and the page links to a new record', async () => {
+  await renderAt('/applications');
   const record = 'Cloud Engineer at Lakeshore Transit Authority';
 
   expect(screen.getByRole('link', { name: `View ${record}` })).toHaveAttribute(

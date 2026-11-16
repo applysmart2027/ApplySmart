@@ -1,15 +1,21 @@
-import { useReducer, type ReactNode } from 'react';
-import { sampleApplications } from './sampleData';
-import { ApplicationsContext, applicationsReducer } from './store';
-import type { ApplicationRecord } from './types';
+import { useEffect, useReducer, useState, type ReactNode } from 'react';
+import { listApplications } from './api';
+import { ApplicationsContext, applicationsReducer, type LoadStatus } from './store';
 
-export function ApplicationsProvider({
-  children,
-  initialRecords = sampleApplications,
-}: {
-  children: ReactNode;
-  initialRecords?: ApplicationRecord[];
-}) {
-  const [records, dispatch] = useReducer(applicationsReducer, initialRecords);
-  return <ApplicationsContext value={{ records, dispatch }}>{children}</ApplicationsContext>;
+export function ApplicationsProvider({ children }: { children: ReactNode }) {
+  const [records, dispatch] = useReducer(applicationsReducer, []);
+  const [status, setStatus] = useState<LoadStatus>('loading');
+
+  useEffect(() => {
+    listApplications()
+      .then((loaded) => {
+        dispatch({ type: 'loaded', records: loaded });
+        setStatus('ready');
+      })
+      .catch(() => setStatus('failed'));
+  }, []);
+
+  return (
+    <ApplicationsContext value={{ records, status, dispatch }}>{children}</ApplicationsContext>
+  );
 }

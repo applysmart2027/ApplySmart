@@ -18,6 +18,9 @@ export function EditApplicationPage() {
   return (
     <>
       <PageHeader title="Edit Application Record" subtitle={describeApplication(record)} />
+      <p className="prototype-control edit-notice">
+        Changes here are not saved yet and disappear when you reload the page.
+      </p>
       {/* Keyed by record so moving straight to another record's edit page starts a fresh draft. */}
       <ApplicationForm
         key={record.id}

@@ -2,6 +2,14 @@ import { Link } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
 
 const messages = {
+  loading: {
+    title: 'Loading application',
+    text: 'Getting this record from your account.',
+  },
+  failed: {
+    title: 'Application could not be loaded',
+    text: 'Check that the backend is running, then reload the page.',
+  },
   'not-found': {
     title: 'Application not found',
     text: 'There is no application record at this address. It may have been deleted.',

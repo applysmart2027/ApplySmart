@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.urls import path
 
 from accounts.api import SessionView
+from applications.api import ApplicationRecordsView
 
 
 # Reports only that the process is up, so a database outage does not make the
@@ -13,4 +14,5 @@ def health(request):
 urlpatterns = [
     path('api/health/', health),
     path('api/session/', SessionView.as_view()),
+    path('api/applications/', ApplicationRecordsView.as_view()),
 ]

@@ -61,7 +61,7 @@ This is the design the Interaction Model records and the code follows. Names are
 | Presentation, backend | `ApplicationRecordsView`, `ApplicationRecordSerializer` | Accept `POST /api/applications/` and `GET /api/applications/`, turn JSON into a draft and back |
 | Application | `create_application_record(student, draft)`, `list_application_records(student)` | Require a signed-in student, apply the domain rules, save, return the record |
 | Domain | `ApplicationRecord`, `ApplicationStatus` | Job title and employer required, posting URL and contact email checked, status from the agreed list (D5), record owned by exactly one student |
-| Infrastructure | `ApplicationRecordModel`, `repository.save`, `repository.list_for_student` | Store and load records in PostgreSQL |
+| Infrastructure | `ApplicationRecordModel`, `repository.save`, `repository.list_for_owner` | Store and load records in PostgreSQL |
 | Accounts | `current_student(request)` | Identify the signed-in student for the request |
 
 Main success scenario for the sequence diagram:
@@ -95,7 +95,7 @@ Each code increment follows the build protocol in `CLAUDE.md`: plan, approval, b
 | 7 | Create and list application records: domain, service, repository, migration, API, tests | SCRUM-18, SCRUM-20, SCRUM-21 | 5, 6, D5 | Tests for valid, invalid and cross-student requests |
 | 8 | Frontend: the list and the create form use the API; the other screens keep their current behaviour (O6) | SCRUM-18 | 7 | Existing tests updated and passing; manual run through sign-in, create, refresh |
 | 9 | Release check: fresh clone runs, READMEs and known limitations current, traceability row filled, source archive built | none yet | 8 | Demo script followed on a clean machine |
-| 10 | Report sections in section 8 | to be agreed with Hira | 3, 4, 8 | Hira merges them into the report |
+| 10 | Report sections in section 8 | SCRUM-356, SCRUM-359 | 3, 4, 8 | The sections are in the report |
 
 ## 7. Jira
 
@@ -109,13 +109,13 @@ The backlog already holds the PBIs for this use case. Anthony decides when to mo
 | SCRUM-26 Validate credentials and enforce session access | none | SCRUM-69 to 71 | No story points |
 | SCRUM-75 Design the cloud deployment model | none | none | No points and no subtasks |
 
-No task exists yet for the report sections or the backend scaffold. Iterations 7 (2026-11-03 to 11-10) and 8 (2026-11-10 to 11-17) do not exist in Jira; the scrum master creates them.
+The backend scaffold is SCRUM-322, the increments are tasks SCRUM-323 and SCRUM-332 to SCRUM-336, and the report, project plan and risk work is SCRUM-352 to SCRUM-362. Iterations 7 (2026-11-03 to 11-10) and 8 (2026-11-10 to 11-17) are sprints 38 and 39.
 
 Risks: ARMP-4 (scope growth) and ARMP-5 (workload) are Anthony's. Each gets a monitoring comment at each sprint review.
 
 ## 8. Report sections
 
-Hira coordinates the report. Anthony drafts:
+Anthony assembles the report. His own sections are:
 
 - Deployment Model: the diagram, each node and what runs on it, and a plain statement of what runs today and what is the target.
 - Cloud Architecture: the AWS services and how they connect, from the report's Cloud Computing section.
@@ -139,11 +139,10 @@ Hira coordinates the report. Anthony drafts:
 - O3 How the React build is served on AWS: from S3 behind CloudFront with `/api/` routed to the load balancer, or by the backend container. Either way the browser must see one origin for the session cookie (ADR-0007). This changes the deployment diagram.
 - O4 Whether ADR-0006 to ADR-0008 are accepted, changed or replaced. Since 2026-11-09 the backend is built on them while the team review is still open.
 - O5 Decided 2026-11-13. D5: the six statuses stay as they are (Saved, Applied, Interview, Offer, Rejected, Withdrawn). D6: contact name and contact email are both optional.
-- O6 What the details, edit and delete screens do once the list comes from the API. Recommended: they keep their prototype behaviour on the loaded records, and the known limitations say changes there are not saved. Backend update and delete are a stretch goal.
+- O6 Decided 2026-11-15: once the list comes from the API, the details, edit and delete screens keep their prototype behaviour on the loaded records. The edit and delete screens and the known limitations say changes there are not saved. Backend update and delete stay a stretch goal.
 
 ## 11. Risks
 
-- The team does not decide O1 to O5 by 2026-11-04. Every later increment moves with it.
 - Python, Django and DRF are new to most of the team; increments 5 to 7 are the first backend code anyone writes in this project.
 - Docker on Windows needs WSL 2, and the local folder path contains `!`, which some tools mishandle.
 - The report's iteration goals promise a deployed application; until the team rewrites them, the report and the increment disagree.

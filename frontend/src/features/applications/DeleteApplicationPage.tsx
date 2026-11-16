@@ -35,7 +35,10 @@ export function DeleteApplicationPage() {
           </p>
         )}
         <p className="delete-question">Are you sure you want to delete this application?</p>
-        <p>The record, its notes and its contact details will be removed. This cannot be undone.</p>
+        <p>
+          The record, its notes and its contact details will be removed. Deleting is not saved yet,
+          so the record comes back when you reload the page.
+        </p>
 
         <label className="prototype-control">
           <input
