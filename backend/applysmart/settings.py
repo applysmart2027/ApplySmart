@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 # Every value comes from the environment so the same image runs locally and on AWS.
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
@@ -47,3 +48,8 @@ DATABASES = {
 }
 
 TIME_ZONE = 'America/Toronto'
+
+# Uploaded resumes. No URL serves this folder: only the resumes app reads it, for the owner.
+RESUME_FILES_DIR = os.environ.get(
+    'RESUME_FILES_DIR', str(Path(__file__).resolve().parent.parent / 'resume_files')
+)
