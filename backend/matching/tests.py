@@ -1,4 +1,5 @@
-from django.test import SimpleTestCase
+from django.contrib.auth.models import User
+from django.test import SimpleTestCase, TestCase
 
 from .domain import (
     ComparisonResult,
@@ -8,14 +9,15 @@ from .domain import (
     QualificationMatch,
     QualificationPriority,
 )
+from .models import ComparisonModel
 
 
 def comparison(**changes):
     fields = {
         'id': 1,
         'owner_id': 10,
-        'resume_id': 2,
-        'job_posting_id': 3,
+        'resume_id': '2',
+        'job_posting_id': '3',
         'status': MatchStatus.QUEUED,
     }
     return ComparisonResult(**(fields | changes))
@@ -92,3 +94,32 @@ class MatchingDomainTests(SimpleTestCase):
             result.qualification_gaps[0].qualification.title,
             'Terraform',
         )
+
+
+class ComparisonModelTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            'maya.okafor',
+            password='demo-pass',
+        )
+
+    def test_comparison_can_be_saved_and_loaded(self):
+        saved = ComparisonModel.objects.create(
+            owner=self.student,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.QUEUED.value,
+            result_data={},
+            failure_reason='',
+        )
+
+        loaded = ComparisonModel.objects.get(pk=saved.pk)
+
+        self.assertEqual(loaded.owner, self.student)
+        self.assertEqual(loaded.resume_id, '2')
+        self.assertEqual(loaded.job_posting_id, 'job-1')
+        self.assertEqual(loaded.status, 'Queued')
+        self.assertEqual(loaded.result_data, {})
+        self.assertEqual(loaded.failure_reason, '')
+        self.assertIsNotNone(loaded.created_at)
+        self.assertIsNotNone(loaded.updated_at)

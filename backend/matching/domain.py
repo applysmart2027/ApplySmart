@@ -48,8 +48,8 @@ class QualificationGap:
 class ComparisonResult:
     id: int | None
     owner_id: int
-    resume_id: int
-    job_posting_id: int
+    resume_id: str
+    job_posting_id: str
     status: MatchStatus
     matched_qualifications: list[QualificationMatch] = field(default_factory=list)
     qualification_gaps: list[QualificationGap] = field(default_factory=list)
