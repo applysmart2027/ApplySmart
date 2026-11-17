@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TestCase
 
-from . import repository, services
+from . import repository, services, worker
 from .domain import (
     ComparisonResult,
     MatchStatus,
@@ -370,3 +370,87 @@ class ComparisonServiceTests(TestCase):
         self.assertNotEqual(retried.id, original.id)
         self.assertEqual(retried.status, MatchStatus.QUEUED)
         self.assertEqual(queued, [(retried.id, False)])
+
+class ComparisonWorkerTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            'maya.okafor',
+            password='demo-pass',
+        )
+
+    def queued_comparison(self):
+        return repository.save_queued_comparison(
+            ComparisonResult(
+                id=None,
+                owner_id=self.student.id,
+                resume_id='2',
+                job_posting_id='job-1',
+                status=MatchStatus.READY,
+            )
+        )
+
+    def test_worker_completes_comparison_and_stores_result(self):
+        result = self.queued_comparison()
+
+        worker.process_comparison(result.id)
+
+        loaded = repository.find_by_id(
+            self.student,
+            result.id,
+        )
+
+        self.assertEqual(
+            loaded.status,
+            MatchStatus.COMPLETED,
+        )
+
+        self.assertEqual(
+            len(loaded.matched_qualifications),
+            3,
+        )
+
+        self.assertEqual(
+            len(loaded.qualification_gaps),
+            2,
+        )
+
+        self.assertEqual(
+            loaded.matched_qualifications[0].qualification.title,
+            'AWS experience',
+        )
+
+        self.assertEqual(
+            loaded.qualification_gaps[0].qualification.title,
+            'Kubernetes',
+        )
+
+    def test_worker_stores_failed_comparison(self):
+        result = self.queued_comparison()
+
+        worker.process_comparison(
+            result.id,
+            simulate_failure=True,
+        )
+
+        loaded = repository.find_by_id(
+            self.student,
+            result.id,
+        )
+
+        self.assertEqual(
+            loaded.status,
+            MatchStatus.FAILED,
+        )
+
+        self.assertEqual(
+            loaded.failure_reason,
+            'Comparison could not be completed.',
+        )
+
+    def test_worker_ignores_missing_comparison(self):
+        worker.process_comparison(999999)
+
+        self.assertEqual(
+            ComparisonModel.objects.count(),
+            0,
+        )
