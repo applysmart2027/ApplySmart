@@ -16,7 +16,7 @@ The list also links to `/resumes/:id`, and the resolve page to `/resumes/:id/man
 
 ## Public surface
 
-`index.ts` exports `resumesRoutes`, which `src/app/routes.tsx` spreads into the route table, and `ResumesProvider`, which `src/app/App.tsx` mounts once above the router. The provider loads the signed-in student's versions with `listResumes()` from `api.ts`; tests can pass `initialResumes` instead. Screens read and change the versions, and the load `status`, through `useResumes()` in `store.ts`, and screens for one version call `useResume(id)`.
+`index.ts` exports `resumesRoutes`, which `src/app/routes.tsx` spreads into the route table, and `ResumesProvider`, which `src/app/App.tsx` mounts once above the router. The provider loads the signed-in student's versions with `listResumes()` from `api.ts` and lists them after the sample versions in `sampleData.ts`, which are not saved and keep the Review and Resolve screens reachable until parsing exists; tests can pass `initialResumes` instead. Screens read and change the versions, and the load `status`, through `useResumes()` in `store.ts`, and screens for one version call `useResume(id)`.
 
 ## Code
 

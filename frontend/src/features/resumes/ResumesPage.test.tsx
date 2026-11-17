@@ -16,15 +16,25 @@ function openMenu(versionName: string) {
   fireEvent.click(screen.getByRole('button', { name: `More actions for ${versionName}` }));
 }
 
-test('the list shows the versions the backend returns for the signed-in student', async () => {
-  const backend = fakeResumesBackend(sampleResumeVersions.slice(0, 2));
+test('the list shows the sample versions followed by the student’s saved uploads', async () => {
+  const saved: ResumeVersion = {
+    ...sampleResumeVersions[2],
+    id: '1',
+    versionName: 'Backend Co-op',
+    uploaded: '2026-11-16',
+  };
+  const backend = fakeResumesBackend([saved]);
 
   await renderFromApi('/resumes', backend);
 
   expect(backend).toHaveBeenCalledWith('/api/resumes/');
-  expect(screen.getByText('2 of 10 resume versions used')).toBeInTheDocument();
-  expect(row('Software Developer - General').getByText('Confirmed')).toBeInTheDocument();
-  expect(row('Cloud Co-op').getByText('Needs review')).toBeInTheDocument();
+  expect(screen.getByText('5 of 10 resume versions used')).toBeInTheDocument();
+  const names = screen
+    .getAllByRole('row')
+    .slice(1)
+    .map((r) => r.querySelector('td')?.textContent);
+  expect(names).toEqual([...sampleResumeVersions.map((r) => r.versionName), 'Backend Co-op']);
+  expect(row('Backend Co-op').getByText('Processing')).toBeInTheDocument();
 });
 
 test('when the versions cannot be loaded the page says so and upload is unavailable', async () => {
