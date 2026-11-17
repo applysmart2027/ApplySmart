@@ -1,6 +1,6 @@
 # ApplySmart backend
 
-The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, sign-in in `accounts/`, saving and listing application records in `applications/`, a health endpoint, and one empty app for each other subsystem. Docker Compose runs it with a PostgreSQL 18 database.
+The Django project that will serve ApplySmart's data to the React frontend. Today it holds the project settings, sign-in in `accounts/`, saving and listing application records in `applications/`, uploading and listing resume versions in `resumes/`, a health endpoint, and one empty app for each other subsystem. Docker Compose runs it with a PostgreSQL 18 database.
 
 ## Apps
 
@@ -26,6 +26,8 @@ Work only in your own app. To use another app's data, call a function in its `se
 | `DELETE /api/session/` | 204, and the student is signed out |
 | `GET /api/applications/` | 200 and the signed-in student's application records, oldest first |
 | `POST /api/applications/` with a record | 201 and the saved record with its `id`. 400 with one message per invalid field, keyed by the JSON field name |
+| `GET /api/resumes/` | 200 and the signed-in student's resume versions, oldest first |
+| `POST /api/resumes/` as multipart form data with `file` and `versionName` | 201 and the new version, marked `Processing`. 400 with `{"file": reason}` or `{"versionName": reason}`. 409 with `{"detail": reason}` when the student already has 10 versions |
 
 Every endpoint needs a signed-in student unless its view sets `permission_classes = [AllowAny]`; `REST_FRAMEWORK` in `settings.py` makes that the default. A browser request that changes data (POST, PUT, PATCH, DELETE) must send the value of the `csrftoken` cookie in an `X-CSRFToken` header, or Django answers 403.
 
@@ -39,6 +41,10 @@ An application record is JSON with these fields. The API adds `id` to the record
 | `deadline` | A date like `2026-11-30`, or an empty string |
 | `contactEmail` | An address like `name@example.com`, or an empty string |
 | `contactName`, `notes`, `resumeId`, `resumeName` | Any text, or an empty string |
+
+A resume upload is accepted when the file is a PDF or DOCX of 5 MB or less whose content matches its type (a PDF starts with `%PDF-`; a DOCX is a zip holding `word/document.xml`), the version name is not blank or already used by that student (ignoring case), and the student has fewer than 10 versions. A refused upload stores nothing. The rules and messages are in `resumes/domain.py` and match the frontend's `uploadValidation.ts`.
+
+Resume files are kept by `resumes/storage.py` in the folder `RESUME_FILES_DIR`, under a random name, never the name the student uploaded. No URL serves that folder, so a file is reachable only through the `resumes` app, which answers each student about their own versions only.
 
 To know which student a request is for, call `current_student(request)` from `accounts/services.py`. It returns a `Student` with `id`, `name` and `email`, or `None` when nobody is signed in.
 
@@ -96,7 +102,7 @@ docker compose run --rm backend python manage.py test
 
 Any other Django command runs the same way: `docker compose run --rm backend python manage.py <command>`. Code changes in `backend/` reload without a rebuild; after a change to `requirements.txt`, start again with `docker compose up --build`.
 
-`docker compose down` stops the containers and keeps the database. `docker compose down -v` also deletes the database.
+`docker compose down` stops the containers and keeps the database and the uploaded resumes. `docker compose down -v` also deletes both.
 
 ## Run without Docker
 
@@ -142,6 +148,7 @@ Put the tests for your app in `<app>/tests.py`, as `accounts/tests.py` does. The
 | `POSTGRES_USER` | No | `applysmart` |
 | `POSTGRES_HOST` | No | `localhost` |
 | `POSTGRES_PORT` | No | `5432` |
+| `RESUME_FILES_DIR` | No | `backend/resume_files/`, which git ignores. `compose.yaml` sets `/data/resumes`, a Docker volume |
 
 ## Django commands
 
@@ -156,7 +163,10 @@ Put the tests for your app in `<app>/tests.py`, as `accounts/tests.py` does. The
 
 ## Known limitations
 
-- Only `accounts/` and `applications/` have code. The other three apps are empty.
+- Only `accounts/`, `applications/` and `resumes/` have code. `matching/` and `recommendations/` are empty.
 - Application records can be created and listed, not changed or deleted.
-- `resumeId` and `resumeName` are stored as the frontend sends them. Nothing checks them against a stored resume, because `resumes/` stores none yet.
+- `resumeId` and `resumeName` are stored as the frontend sends them. Nothing checks them against the student's resume versions yet.
+- Resume versions can be uploaded and listed, not renamed, made primary, replaced or deleted, and no endpoint returns a stored file.
+- Uploaded resumes are not parsed: every version stays `Processing`. Text extraction, sorting into sections and the scanned-image check from use case extension 2.a come with parsing.
+- Files are stored on local disk. Private S3 storage on AWS (ADR-0008) needs a second `FileStorage` class.
 - There is no registration, password reset or account page. The sample students are the only accounts.
