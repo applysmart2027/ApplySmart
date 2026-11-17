@@ -79,7 +79,7 @@ Each area starts from its sidebar link. Its feature README lists the routes and 
 
 - There is no sign-out button. Clearing the site's cookies in the browser signs you out.
 - Matching and Recommendations run on their own sample data, and no area reads another area's data yet.
-- In Resumes, only the list and uploads are saved. Set as primary, Delete, Retry, Upload a replacement and Confirm resume change a version only until the page is reloaded. Uploaded resumes are not parsed yet, so they stay Processing and the Review and Resolve screens are not reachable from the list; their tests use sample versions.
+- In Resumes, only uploads are saved. The list shows four sample versions before the student's uploads, so the Review and Resolve screens can be opened; the samples come back on every reload. Set as primary, Delete, Retry, Upload a replacement and Confirm resume change a version only until the page is reloaded. Uploaded resumes are not parsed yet, so they stay Processing. The samples count toward the "of 10 resume versions used" line, so the browser allows six uploads; the backend's limit counts only saved uploads.
 - The resume step in Applications offers three sample resumes kept in the applications feature, not the list from the resumes feature. A picked file keeps only its name; nothing is uploaded or read.
 - Some links lead to Page not found because their screens are not built: `/resumes/:id`, `/resumes/:id/manual`, and the Progress Summary and Reminders & Follow-ups tabs in Recommendations.
 - `npm run format:check` fails on 18 files in `src/features/matching/` and `src/features/recommendations/`.
