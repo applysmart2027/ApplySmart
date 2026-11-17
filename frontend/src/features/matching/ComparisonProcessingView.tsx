@@ -1,18 +1,23 @@
 import { PageHeader } from '../../shared/ui/PageHeader';
+import type { MatchStatus } from './types';
+
 
 type ComparisonProcessingViewProps = {
   resumeName: string;
   jobTitle: string;
   company: string;
+  status: MatchStatus;
   onRefresh: () => void;
   onBack: () => void;
 };
+
 
 // Screen shown while ApplySmart is processing the comparison
 export function ComparisonProcessingView({
   resumeName,
   jobTitle,
   company,
+  status,
   onRefresh,
   onBack,
 }: ComparisonProcessingViewProps) {
@@ -39,12 +44,14 @@ export function ComparisonProcessingView({
 
           <div>
             <dt>Current Status</dt>
-            <dd>Processing</dd>
+            <dd>{status}</dd>
           </div>
         </dl>
 
         <div className="matching-progress">
-          <p>Extracting and comparing qualifications...</p>
+          <p>
+            Extracting and comparing qualifications...
+          </p>
 
           <progress value={65} max={100}>
             65%
@@ -54,16 +61,24 @@ export function ComparisonProcessingView({
         </div>
 
         <p className="matching-help">
-          Required and preferred qualifications are being checked against the
-          selected resume.
+          Required and preferred qualifications are being checked
+          against the selected resume.
         </p>
 
         <div className="matching-actions">
-          <button className="button button-primary" type="button" onClick={onRefresh}>
+          <button
+            className="button button-primary"
+            type="button"
+            onClick={onRefresh}
+          >
             Refresh Status
           </button>
 
-          <button className="button" type="button" onClick={onBack}>
+          <button
+            className="button"
+            type="button"
+            onClick={onBack}
+          >
             Back to Comparisons
           </button>
         </div>

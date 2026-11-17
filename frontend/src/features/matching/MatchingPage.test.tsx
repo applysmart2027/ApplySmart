@@ -1,24 +1,138 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import {
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
+
+import {
+  beforeEach,
+  expect,
+  test,
+  vi,
+} from 'vitest';
+
+import { ResumesProvider } from '../resumes/ResumesProvider';
+import { emptySections, type ResumeVersion } from '../resumes/types';
+
+import {
+  createComparison,
+  getComparisonResult,
+  retryComparison,
+  type ComparisonApiResult,
+} from './api';
+
 import { MatchingPage } from './MatchingPage';
+import { sampleComparisonResult } from './sampleData';
 
-// Selects a resume and job posting for tests that need a valid comparison
-function selectComparison(
-  resumeId = 'res-2',
-  jobPostingId = 'job-1',
-) {
-  fireEvent.change(screen.getByLabelText('Resume'), {
-    target: { value: resumeId },
-  });
 
-  fireEvent.change(screen.getByLabelText('Job Posting'), {
-    target: { value: jobPostingId },
-  });
+vi.mock('./api', () => ({
+  ComparisonRequestError: class ComparisonRequestError extends Error {
+    readonly fieldErrors: {
+      resumeId?: string;
+      jobPostingId?: string;
+    };
+
+    constructor(fieldErrors: {
+      resumeId?: string;
+      jobPostingId?: string;
+    }) {
+      super('Comparison request was refused.');
+      this.fieldErrors = fieldErrors;
+    }
+  },
+
+  createComparison: vi.fn(),
+  getComparisonResult: vi.fn(),
+  retryComparison: vi.fn(),
+}));
+
+
+const mockedCreateComparison =
+  vi.mocked(createComparison);
+
+const mockedGetComparisonResult =
+  vi.mocked(getComparisonResult);
+
+const mockedRetryComparison =
+  vi.mocked(retryComparison);
+
+
+const testResumes: ResumeVersion[] = [
+  {
+    id: 'resume-101',
+    versionName: 'Cloud Co-op',
+    parseStatus: 'Confirmed',
+    isPrimary: true,
+    uploaded: '2026-11-01',
+    parseAttempts: 1,
+    failureReason: '',
+    sections: emptySections(),
+  },
+  {
+    id: 'resume-102',
+    versionName: 'Software Developer - General',
+    parseStatus: 'Confirmed',
+    isPrimary: false,
+    uploaded: '2026-11-02',
+    parseAttempts: 1,
+    failureReason: '',
+    sections: emptySections(),
+  },
+];
+
+
+function renderMatchingPage() {
+  render(
+    <ResumesProvider initialResumes={testResumes}>
+      <MatchingPage />
+    </ResumesProvider>,
+  );
 }
 
-// The matching feature should start on the comparison selection screen
+
+function apiResult(
+  changes: Partial<ComparisonApiResult> = {},
+): ComparisonApiResult {
+  return {
+    id: 'comparison-1',
+    resumeId: 'resume-101',
+    jobPostingId: 'job-1',
+    status: 'Queued',
+    matchedQualifications: [],
+    qualificationGaps: [],
+    failureReason: '',
+    ...changes,
+  };
+}
+
+
+function selectComparison(
+  resumeId = 'resume-101',
+  jobPostingId = 'job-1',
+) {
+  fireEvent.change(
+    screen.getByLabelText('Resume'),
+    {
+      target: { value: resumeId },
+    },
+  );
+
+  fireEvent.change(
+    screen.getByLabelText('Job Posting'),
+    {
+      target: { value: jobPostingId },
+    },
+  );
+}
+
+
+beforeEach(() => {
+  vi.resetAllMocks();
+});
+
+
 test('the matching page starts on the comparison form', () => {
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   expect(
     screen.getByRole('heading', {
@@ -34,13 +148,18 @@ test('the matching page starts on the comparison form', () => {
     }),
   ).toBeInTheDocument();
 
-  expect(screen.getByLabelText('Resume')).toBeInTheDocument();
-  expect(screen.getByLabelText('Job Posting')).toBeInTheDocument();
+  expect(
+    screen.getByLabelText('Resume'),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByLabelText('Job Posting'),
+  ).toBeInTheDocument();
 });
 
-// Starting without the required selections should show validation errors
+
 test('starting without selections shows validation errors', () => {
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -48,13 +167,36 @@ test('starting without selections shows validation errors', () => {
     }),
   );
 
-  expect(screen.getByText('Select a resume.')).toBeInTheDocument();
-  expect(screen.getByText('Select a job posting.')).toBeInTheDocument();
+  expect(
+    screen.getByText('Select a resume.'),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText('Select a job posting.'),
+  ).toBeInTheDocument();
+
+  expect(
+    mockedCreateComparison,
+  ).not.toHaveBeenCalled();
 });
 
-// A valid comparison should move from processing to the results screen
-test('a valid comparison can be processed and show results', () => {
-  render(<MatchingPage />);
+
+test('a valid comparison can be processed and show results', async () => {
+  mockedCreateComparison.mockResolvedValue(
+    apiResult(),
+  );
+
+  mockedGetComparisonResult.mockResolvedValue(
+    apiResult({
+      status: 'Completed',
+      matchedQualifications:
+        sampleComparisonResult.matchedQualifications,
+      qualificationGaps:
+        sampleComparisonResult.qualificationGaps,
+    }),
+  );
+
+  renderMatchingPage();
 
   selectComparison();
 
@@ -65,17 +207,23 @@ test('a valid comparison can be processed and show results', () => {
   );
 
   expect(
-    screen.getByRole('heading', {
+    await screen.findByRole('heading', {
       level: 1,
       name: 'Comparison Processing',
     }),
   ).toBeInTheDocument();
 
-  expect(screen.getByText('Cloud Co-op')).toBeInTheDocument();
+  expect(
+    screen.getByText('Queued'),
+  ).toBeInTheDocument();
 
   expect(
-    screen.getByText('Junior Cloud Developer - Northstar Systems'),
-  ).toBeInTheDocument();
+    mockedCreateComparison,
+  ).toHaveBeenCalledWith(
+    'resume-101',
+    'job-1',
+    false,
+  );
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -84,21 +232,50 @@ test('a valid comparison can be processed and show results', () => {
   );
 
   expect(
-    screen.getByRole('heading', {
+    await screen.findByRole('heading', {
       level: 1,
       name: 'Match and Gap Results',
     }),
   ).toBeInTheDocument();
 
-  expect(screen.getByText('AWS experience')).toBeInTheDocument();
-  expect(screen.getByText('Kubernetes')).toBeInTheDocument();
+  expect(
+    screen.getByText('AWS experience'),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText('Kubernetes'),
+  ).toBeInTheDocument();
+
+  expect(
+    mockedGetComparisonResult,
+  ).toHaveBeenCalledWith('comparison-1');
 });
 
-// The prototype failure control should display the failed comparison screen
-test('a simulated processing failure shows the retry screen', () => {
-  render(<MatchingPage />);
 
-  selectComparison('res-1', 'job-2');
+test('a simulated processing failure shows the retry screen', async () => {
+  mockedCreateComparison.mockResolvedValue(
+    apiResult({
+      resumeId: 'resume-102',
+      jobPostingId: 'job-2',
+    }),
+  );
+
+  mockedGetComparisonResult.mockResolvedValue(
+    apiResult({
+      resumeId: 'resume-102',
+      jobPostingId: 'job-2',
+      status: 'Failed',
+      failureReason:
+        'Comparison could not be completed.',
+    }),
+  );
+
+  renderMatchingPage();
+
+  selectComparison(
+    'resume-102',
+    'job-2',
+  );
 
   fireEvent.click(
     screen.getByRole('checkbox', {
@@ -112,6 +289,19 @@ test('a simulated processing failure shows the retry screen', () => {
     }),
   );
 
+  await screen.findByRole('heading', {
+    level: 1,
+    name: 'Comparison Processing',
+  });
+
+  expect(
+    mockedCreateComparison,
+  ).toHaveBeenCalledWith(
+    'resume-102',
+    'job-2',
+    true,
+  );
+
   fireEvent.click(
     screen.getByRole('button', {
       name: 'Refresh Status',
@@ -119,31 +309,53 @@ test('a simulated processing failure shows the retry screen', () => {
   );
 
   expect(
-    screen.getByRole('heading', {
+    await screen.findByRole('heading', {
       level: 1,
       name: 'Comparison Could Not Be Completed',
     }),
   ).toBeInTheDocument();
 
-  expect(screen.getByText('Status: Failed')).toBeInTheDocument();
-  expect(screen.getByText('Software Developer - General')).toBeInTheDocument();
+  expect(
+    screen.getByText('Status: Failed'),
+  ).toBeInTheDocument();
 
   expect(
-    screen.getByText('Cloud Support Associate - MapleTech Solutions'),
+    screen.getByText(
+      'Software Developer - General',
+    ),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText(
+      'Cloud Support Associate - MapleTech Solutions',
+    ),
   ).toBeInTheDocument();
 });
 
-// Retrying a failed comparison should return to processing
-test('a failed comparison can be retried', () => {
-  render(<MatchingPage />);
 
-  selectComparison();
+test('a failed comparison can be retried', async () => {
+  mockedCreateComparison.mockResolvedValue(
+    apiResult(),
+  );
 
-  fireEvent.click(
-    screen.getByRole('checkbox', {
-      name: 'Simulate processing failure',
+  mockedGetComparisonResult.mockResolvedValue(
+    apiResult({
+      status: 'Failed',
+      failureReason:
+        'Comparison could not be completed.',
     }),
   );
+
+  mockedRetryComparison.mockResolvedValue(
+    apiResult({
+      id: 'comparison-2',
+      status: 'Queued',
+    }),
+  );
+
+  renderMatchingPage();
+
+  selectComparison();
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -151,11 +363,21 @@ test('a failed comparison can be retried', () => {
     }),
   );
 
+  await screen.findByRole('heading', {
+    level: 1,
+    name: 'Comparison Processing',
+  });
+
   fireEvent.click(
     screen.getByRole('button', {
       name: 'Refresh Status',
     }),
   );
+
+  await screen.findByRole('heading', {
+    level: 1,
+    name: 'Comparison Could Not Be Completed',
+  });
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -164,16 +386,40 @@ test('a failed comparison can be retried', () => {
   );
 
   expect(
-    screen.getByRole('heading', {
+    await screen.findByRole('heading', {
       level: 1,
       name: 'Comparison Processing',
     }),
   ).toBeInTheDocument();
+
+  expect(
+    mockedRetryComparison,
+  ).toHaveBeenCalledWith(
+    'comparison-1',
+  );
+
+  expect(
+    screen.getByText('Queued'),
+  ).toBeInTheDocument();
 });
 
-// Running a new comparison should clear the previous selections
-test('running a new comparison resets the form', () => {
-  render(<MatchingPage />);
+
+test('running a new comparison resets the form', async () => {
+  mockedCreateComparison.mockResolvedValue(
+    apiResult(),
+  );
+
+  mockedGetComparisonResult.mockResolvedValue(
+    apiResult({
+      status: 'Completed',
+      matchedQualifications:
+        sampleComparisonResult.matchedQualifications,
+      qualificationGaps:
+        sampleComparisonResult.qualificationGaps,
+    }),
+  );
+
+  renderMatchingPage();
 
   selectComparison();
 
@@ -183,11 +429,21 @@ test('running a new comparison resets the form', () => {
     }),
   );
 
+  await screen.findByRole('heading', {
+    level: 1,
+    name: 'Comparison Processing',
+  });
+
   fireEvent.click(
     screen.getByRole('button', {
       name: 'Refresh Status',
     }),
   );
+
+  await screen.findByRole('heading', {
+    level: 1,
+    name: 'Match and Gap Results',
+  });
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -195,6 +451,11 @@ test('running a new comparison resets the form', () => {
     }),
   );
 
-  expect(screen.getByLabelText('Resume')).toHaveValue('');
-  expect(screen.getByLabelText('Job Posting')).toHaveValue('');
+  expect(
+    screen.getByLabelText('Resume'),
+  ).toHaveValue('');
+
+  expect(
+    screen.getByLabelText('Job Posting'),
+  ).toHaveValue('');
 });
