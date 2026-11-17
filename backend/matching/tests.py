@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TestCase
 
-from . import repository
+from . import repository, services
 from .domain import (
     ComparisonResult,
     MatchStatus,
@@ -263,3 +263,110 @@ class ComparisonRepositoryTests(TestCase):
             loaded.failure_reason,
             'Comparison could not be completed.',
         )
+class ComparisonServiceTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            'maya.okafor',
+            password='demo-pass',
+        )
+
+    def test_create_comparison_saves_and_queues_request(self):
+        queued = []
+
+        result = services.create_comparison(
+            student=self.student,
+            resume_id='2',
+            job_posting_id='job-1',
+            enqueue=lambda comparison_id, simulate_failure: queued.append(
+                (comparison_id, simulate_failure)
+            ),
+        )
+
+        self.assertEqual(result.status, MatchStatus.QUEUED)
+        self.assertIsNotNone(result.id)
+        self.assertEqual(queued, [(result.id, False)])
+
+    def test_missing_selections_are_rejected(self):
+        with self.assertRaises(services.ComparisonValidationError) as caught:
+            services.create_comparison(
+                student=self.student,
+                resume_id='',
+                job_posting_id='',
+                enqueue=lambda *_: None,
+            )
+
+        self.assertEqual(
+            caught.exception.field_errors,
+            {
+                'resumeId': 'Choose a resume to compare.',
+                'jobPostingId': 'Choose a job posting to compare.',
+            },
+        )
+
+    def test_student_cannot_get_another_students_comparison(self):
+        other_student = User.objects.create_user(
+            'daniel.reyes',
+            password='demo-pass',
+        )
+
+        result = services.create_comparison(
+            student=self.student,
+            resume_id='2',
+            job_posting_id='job-1',
+            enqueue=lambda *_: None,
+        )
+
+        with self.assertRaises(services.ComparisonNotFoundError):
+            services.get_comparison_result(
+                other_student,
+                result.id,
+            )
+
+    def test_student_can_get_their_own_comparison(self):
+        result = services.create_comparison(
+            student=self.student,
+            resume_id='2',
+            job_posting_id='job-1',
+            enqueue=lambda *_: None,
+        )
+
+        found = services.get_comparison_result(
+            self.student,
+            result.id,
+        )
+
+        self.assertEqual(found.id, result.id)
+        self.assertEqual(found.status, MatchStatus.QUEUED)
+
+    def test_failed_comparison_can_be_retried(self):
+        original = services.create_comparison(
+            student=self.student,
+            resume_id='2',
+            job_posting_id='job-1',
+            enqueue=lambda *_: None,
+        )
+
+        failed = ComparisonResult(
+            id=original.id,
+            owner_id=self.student.id,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.FAILED,
+            failure_reason='Comparison could not be completed.',
+        )
+
+        repository.save_failed_result(failed)
+
+        queued = []
+
+        retried = services.retry_comparison(
+            student=self.student,
+            comparison_id=original.id,
+            enqueue=lambda comparison_id, simulate_failure: queued.append(
+                (comparison_id, simulate_failure)
+            ),
+        )
+
+        self.assertNotEqual(retried.id, original.id)
+        self.assertEqual(retried.status, MatchStatus.QUEUED)
+        self.assertEqual(queued, [(retried.id, False)])
