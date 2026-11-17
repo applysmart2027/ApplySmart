@@ -1,29 +1,69 @@
 import { useState } from 'react';
+
+import {
+  ComparisonRequestError,
+  createComparison,
+  getComparisonResult,
+  retryComparison,
+  type ComparisonApiResult,
+} from './api';
+
 import { CompareResumeJobView } from './CompareResumeJobView';
 import { ComparisonFailedView } from './ComparisonFailedView';
 import { ComparisonProcessingView } from './ComparisonProcessingView';
 import { MatchGapResultsView } from './MatchGapResultsView';
+
 import {
-  sampleComparisonResult,
   sampleJobPostings,
   sampleResumes,
 } from './sampleData';
+
 import {
   hasMatchingErrors,
   type MatchingErrors,
   validateComparison,
 } from './validation';
+
+import type {
+  ComparisonResult,
+  MatchStatus,
+} from './types';
+
 import './matching.css';
 
-type MatchingView = 'compare' | 'processing' | 'results' | 'failed';
 
-// Controls the screens and state for the resume matching prototype
+type MatchingView =
+  | 'compare'
+  | 'processing'
+  | 'results'
+  | 'failed';
+
+
 export function MatchingPage() {
-  const [view, setView] = useState<MatchingView>('compare');
-  const [resumeId, setResumeId] = useState('');
-  const [jobPostingId, setJobPostingId] = useState('');
-  const [errors, setErrors] = useState<MatchingErrors>({});
-  const [simulateFailure, setSimulateFailure] = useState(false);
+  const [view, setView] =
+    useState<MatchingView>('compare');
+
+  const [resumeId, setResumeId] =
+    useState('');
+
+  const [jobPostingId, setJobPostingId] =
+    useState('');
+
+  const [comparisonId, setComparisonId] =
+    useState('');
+
+  const [status, setStatus] =
+    useState<MatchStatus>('Ready');
+
+  const [errors, setErrors] =
+    useState<MatchingErrors>({});
+
+  const [result, setResult] =
+    useState<ComparisonApiResult | null>(null);
+
+  const [simulateFailure, setSimulateFailure] =
+    useState(false);
+
 
   const selectedResume = sampleResumes.find(
     (resume) => resume.id === resumeId,
@@ -33,9 +73,13 @@ export function MatchingPage() {
     (job) => job.id === jobPostingId,
   );
 
-  // Starts the comparison only when both required selections are valid
-  function handleStart() {
-    const validationErrors = validateComparison(resumeId, jobPostingId);
+
+  // Starts a new comparison through the backend API
+  async function handleStart() {
+    const validationErrors = validateComparison(
+      resumeId,
+      jobPostingId,
+    );
 
     setErrors(validationErrors);
 
@@ -43,52 +87,118 @@ export function MatchingPage() {
       return;
     }
 
-    setView('processing');
+    try {
+      const created = await createComparison(
+        resumeId,
+        jobPostingId,
+        simulateFailure,
+      );
+
+      setComparisonId(created.id);
+      setStatus(created.status);
+      setResult(null);
+      setView('processing');
+    } catch (error) {
+      if (error instanceof ComparisonRequestError) {
+        setErrors(error.fieldErrors);
+        return;
+      }
+
+      throw error;
+    }
   }
+
 
   // Clears the resume error when the student chooses a resume
   function handleResumeChange(id: string) {
     setResumeId(id);
+
     setErrors((current) => ({
       ...current,
       resumeId: undefined,
     }));
   }
 
+
   // Clears the job posting error when the student chooses a posting
   function handleJobPostingChange(id: string) {
     setJobPostingId(id);
+
     setErrors((current) => ({
       ...current,
       jobPostingId: undefined,
     }));
   }
 
-  // Simulates the comparison finishing when the status is refreshed
-  function handleRefresh() {
-    setView(simulateFailure ? 'failed' : 'results');
+
+  // Checks the latest comparison status
+  async function handleRefresh() {
+    if (!comparisonId) {
+      return;
+    }
+
+    const latest =
+      await getComparisonResult(comparisonId);
+
+    setStatus(latest.status);
+
+    if (
+      latest.status === 'Queued' ||
+      latest.status === 'Processing'
+    ) {
+      setView('processing');
+      return;
+    }
+
+    if (latest.status === 'Failed') {
+      setResult(latest);
+      setView('failed');
+      return;
+    }
+
+    if (latest.status === 'Completed') {
+      setResult(latest);
+      setView('results');
+    }
   }
 
-  // Starts another attempt using the same selections
-  function handleRetry() {
+
+  // Retries a failed comparison
+  async function handleRetry() {
+    if (!comparisonId) {
+      return;
+    }
+
+    const retried =
+      await retryComparison(comparisonId);
+
+    setComparisonId(retried.id);
+    setStatus(retried.status);
+    setResult(null);
     setSimulateFailure(false);
     setView('processing');
   }
 
-  // Returns to the selection screen without removing the current choices
+
+  // Returns to the selection screen
   function handleBackToComparison() {
     setErrors({});
     setView('compare');
   }
 
-  // Resets the feature for a completely new comparison
+
+  // Resets the feature for a new comparison
   function handleReset() {
     setResumeId('');
     setJobPostingId('');
+    setComparisonId('');
+    setStatus('Ready');
     setErrors({});
+    setResult(null);
     setSimulateFailure(false);
     setView('compare');
   }
+
 
   if (view === 'processing') {
     return (
@@ -96,11 +206,13 @@ export function MatchingPage() {
         resumeName={selectedResume?.name ?? ''}
         jobTitle={selectedJob?.title ?? ''}
         company={selectedJob?.company ?? ''}
+        status={status}
         onRefresh={handleRefresh}
         onBack={handleBackToComparison}
       />
     );
   }
+
 
   if (view === 'failed') {
     return (
@@ -115,21 +227,33 @@ export function MatchingPage() {
     );
   }
 
-  if (view === 'results') {
-    const result = {
-      ...sampleComparisonResult,
-      resume: selectedResume ?? sampleComparisonResult.resume,
-      jobPosting: selectedJob ?? sampleComparisonResult.jobPosting,
+
+  if (
+    view === 'results' &&
+    result &&
+    selectedResume &&
+    selectedJob
+  ) {
+    const comparisonResult: ComparisonResult = {
+      id: result.id,
+      resume: selectedResume,
+      jobPosting: selectedJob,
+      status: result.status,
+      matchedQualifications:
+        result.matchedQualifications,
+      qualificationGaps:
+        result.qualificationGaps,
     };
 
     return (
       <MatchGapResultsView
-        result={result}
+        result={comparisonResult}
         onRunNewComparison={handleReset}
         onBack={handleBackToComparison}
       />
     );
   }
+
 
   return (
     <CompareResumeJobView
