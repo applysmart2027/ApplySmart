@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import { sampleResumeVersions } from '../resumes/sampleData';
+import { useResumes } from '../resumes/store';
+
 import {
   ComparisonRequestError,
   createComparison,
@@ -13,10 +16,7 @@ import { ComparisonFailedView } from './ComparisonFailedView';
 import { ComparisonProcessingView } from './ComparisonProcessingView';
 import { MatchGapResultsView } from './MatchGapResultsView';
 
-import {
-  sampleJobPostings,
-  sampleResumes,
-} from './sampleData';
+import { sampleJobPostings } from './sampleData';
 
 import {
   hasMatchingErrors,
@@ -40,6 +40,25 @@ type MatchingView =
 
 
 export function MatchingPage() {
+  const { resumes: resumeVersions } = useResumes();
+
+  // Removes prototype resumes so Matching only uses
+  // the student's real confirmed resume versions
+  const sampleResumeIds = new Set(
+    sampleResumeVersions.map((resume) => resume.id),
+  );
+
+  const resumes = resumeVersions
+    .filter(
+      (resume) =>
+        !sampleResumeIds.has(resume.id) &&
+        resume.parseStatus === 'Confirmed',
+    )
+    .map((resume) => ({
+      id: resume.id,
+      name: resume.versionName,
+    }));
+
   const [view, setView] =
     useState<MatchingView>('compare');
 
@@ -65,7 +84,7 @@ export function MatchingPage() {
     useState(false);
 
 
-  const selectedResume = sampleResumes.find(
+  const selectedResume = resumes.find(
     (resume) => resume.id === resumeId,
   );
 
@@ -257,6 +276,7 @@ export function MatchingPage() {
 
   return (
     <CompareResumeJobView
+      resumes={resumes}
       resumeId={resumeId}
       jobPostingId={jobPostingId}
       errors={errors}
