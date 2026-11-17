@@ -11,6 +11,9 @@ import {
   vi,
 } from 'vitest';
 
+import { ResumesProvider } from '../resumes/ResumesProvider';
+import { emptySections, type ResumeVersion } from '../resumes/types';
+
 import {
   createComparison,
   getComparisonResult,
@@ -54,12 +57,45 @@ const mockedRetryComparison =
   vi.mocked(retryComparison);
 
 
+const testResumes: ResumeVersion[] = [
+  {
+    id: 'resume-101',
+    versionName: 'Cloud Co-op',
+    parseStatus: 'Confirmed',
+    isPrimary: true,
+    uploaded: '2026-11-01',
+    parseAttempts: 1,
+    failureReason: '',
+    sections: emptySections(),
+  },
+  {
+    id: 'resume-102',
+    versionName: 'Software Developer - General',
+    parseStatus: 'Confirmed',
+    isPrimary: false,
+    uploaded: '2026-11-02',
+    parseAttempts: 1,
+    failureReason: '',
+    sections: emptySections(),
+  },
+];
+
+
+function renderMatchingPage() {
+  render(
+    <ResumesProvider initialResumes={testResumes}>
+      <MatchingPage />
+    </ResumesProvider>,
+  );
+}
+
+
 function apiResult(
   changes: Partial<ComparisonApiResult> = {},
 ): ComparisonApiResult {
   return {
     id: 'comparison-1',
-    resumeId: 'res-2',
+    resumeId: 'resume-101',
     jobPostingId: 'job-1',
     status: 'Queued',
     matchedQualifications: [],
@@ -71,7 +107,7 @@ function apiResult(
 
 
 function selectComparison(
-  resumeId = 'res-2',
+  resumeId = 'resume-101',
   jobPostingId = 'job-1',
 ) {
   fireEvent.change(
@@ -96,7 +132,7 @@ beforeEach(() => {
 
 
 test('the matching page starts on the comparison form', () => {
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   expect(
     screen.getByRole('heading', {
@@ -123,7 +159,7 @@ test('the matching page starts on the comparison form', () => {
 
 
 test('starting without selections shows validation errors', () => {
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   fireEvent.click(
     screen.getByRole('button', {
@@ -153,16 +189,14 @@ test('a valid comparison can be processed and show results', async () => {
   mockedGetComparisonResult.mockResolvedValue(
     apiResult({
       status: 'Completed',
-
       matchedQualifications:
         sampleComparisonResult.matchedQualifications,
-
       qualificationGaps:
         sampleComparisonResult.qualificationGaps,
     }),
   );
 
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   selectComparison();
 
@@ -186,7 +220,7 @@ test('a valid comparison can be processed and show results', async () => {
   expect(
     mockedCreateComparison,
   ).toHaveBeenCalledWith(
-    'res-2',
+    'resume-101',
     'job-1',
     false,
   );
@@ -221,14 +255,14 @@ test('a valid comparison can be processed and show results', async () => {
 test('a simulated processing failure shows the retry screen', async () => {
   mockedCreateComparison.mockResolvedValue(
     apiResult({
-      resumeId: 'res-1',
+      resumeId: 'resume-102',
       jobPostingId: 'job-2',
     }),
   );
 
   mockedGetComparisonResult.mockResolvedValue(
     apiResult({
-      resumeId: 'res-1',
+      resumeId: 'resume-102',
       jobPostingId: 'job-2',
       status: 'Failed',
       failureReason:
@@ -236,10 +270,10 @@ test('a simulated processing failure shows the retry screen', async () => {
     }),
   );
 
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   selectComparison(
-    'res-1',
+    'resume-102',
     'job-2',
   );
 
@@ -263,7 +297,7 @@ test('a simulated processing failure shows the retry screen', async () => {
   expect(
     mockedCreateComparison,
   ).toHaveBeenCalledWith(
-    'res-1',
+    'resume-102',
     'job-2',
     true,
   );
@@ -319,7 +353,7 @@ test('a failed comparison can be retried', async () => {
     }),
   );
 
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   selectComparison();
 
@@ -378,16 +412,14 @@ test('running a new comparison resets the form', async () => {
   mockedGetComparisonResult.mockResolvedValue(
     apiResult({
       status: 'Completed',
-
       matchedQualifications:
         sampleComparisonResult.matchedQualifications,
-
       qualificationGaps:
         sampleComparisonResult.qualificationGaps,
     }),
   );
 
-  render(<MatchingPage />);
+  renderMatchingPage();
 
   selectComparison();
 
