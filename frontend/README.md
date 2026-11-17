@@ -1,6 +1,6 @@
 # ApplySmart frontend
 
-The React prototype for ApplySmart. Sign-in goes through the backend, and so do listing and creating application records. Every other screen uses data hard-coded in the browser, which resets on refresh.
+The React prototype for ApplySmart. Sign-in goes through the backend, and so do listing and creating application records and listing and uploading resumes. Every other screen uses data hard-coded in the browser, which resets on refresh.
 
 ## Prerequisites
 
@@ -78,7 +78,8 @@ Each area starts from its sidebar link. Its feature README lists the routes and 
 ## Known limitations
 
 - There is no sign-out button. Clearing the site's cookies in the browser signs you out.
-- Resumes, Matching and Recommendations run on their own sample data, and no area reads another area's data yet.
+- Matching and Recommendations run on their own sample data, and no area reads another area's data yet.
+- In Resumes, only the list and uploads are saved. Set as primary, Delete, Retry, Upload a replacement and Confirm resume change a version only until the page is reloaded. Uploaded resumes are not parsed yet, so they stay Processing and the Review and Resolve screens are not reachable from the list; their tests use sample versions.
 - The resume step in Applications offers three sample resumes kept in the applications feature, not the list from the resumes feature. A picked file keeps only its name; nothing is uploaded or read.
 - Some links lead to Page not found because their screens are not built: `/resumes/:id`, `/resumes/:id/manual`, and the Progress Summary and Reminders & Follow-ups tabs in Recommendations.
 - `npm run format:check` fails on 18 files in `src/features/matching/` and `src/features/recommendations/`.

@@ -10,7 +10,8 @@ function renderAt(path: string) {
   vi.stubGlobal('fetch', fakeRecordsBackend());
   render(
     <ApplicationsProvider>
-      <ResumesProvider>
+      {/* The fake backend answers only the applications API, so resumes start empty. */}
+      <ResumesProvider initialResumes={[]}>
         <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
       </ResumesProvider>
     </ApplicationsProvider>,

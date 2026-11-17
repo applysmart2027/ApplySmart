@@ -1,12 +1,17 @@
 import { createContext, useContext, type Dispatch } from 'react';
 import type { ResumeVersion } from './types';
 
+export type LoadStatus = 'loading' | 'ready' | 'failed';
+
 type ResumesAction =
+  | { type: 'loaded'; resumes: ResumeVersion[] }
   | { type: 'created' | 'updated'; resume: ResumeVersion }
   | { type: 'removed' | 'madePrimary'; id: string };
 
 export function resumesReducer(resumes: ResumeVersion[], action: ResumesAction): ResumeVersion[] {
   switch (action.type) {
+    case 'loaded':
+      return action.resumes;
     case 'created':
       return [...resumes, action.resume];
     case 'updated':
@@ -20,6 +25,7 @@ export function resumesReducer(resumes: ResumeVersion[], action: ResumesAction):
 
 export const ResumesContext = createContext<{
   resumes: ResumeVersion[];
+  status: LoadStatus;
   dispatch: Dispatch<ResumesAction>;
 } | null>(null);
 

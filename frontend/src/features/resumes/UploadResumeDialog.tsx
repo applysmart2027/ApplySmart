@@ -1,6 +1,9 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent } from 'react';
+import { UploadRefusedError } from './api';
 import { formatFileSize, todayIso } from './format';
 import { defaultVersionName, fileProblem, type Problem } from './uploadValidation';
+
+const UPLOAD_FAILED = 'Your resume could not be uploaded. Nothing was saved. Try again.';
 
 export function UploadResumeDialog({
   title = 'Upload resume',
@@ -12,7 +15,8 @@ export function UploadResumeDialog({
   title?: string;
   initialName?: string;
   existingNames: string[];
-  onUpload: (upload: { versionName: string; file: File; uploaded: string }) => void;
+  // May return a promise: the dialog stays open until it settles, and shows why if it rejects.
+  onUpload: (upload: { versionName: string; file: File; uploaded: string }) => void | Promise<void>;
   onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -21,6 +25,7 @@ export function UploadResumeDialog({
   const [versionName, setVersionName] = useState(initialName);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [sending, setSending] = useState(false);
   const hintId = useId();
   const nameId = useId();
   const nameHintId = useId();
@@ -48,8 +53,9 @@ export function UploadResumeDialog({
     pick(event.dataTransfer.files[0]);
   }
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
+    if (sending) return;
     if (!file) {
       setProblem({ field: 'file', message: 'Choose a PDF or DOCX file to upload.' });
       return;
@@ -64,7 +70,20 @@ export function UploadResumeDialog({
         : null);
     setProblem(found);
     if (found) return;
-    onUpload({ versionName: name, file, uploaded });
+    setSending(true);
+    try {
+      await onUpload({ versionName: name, file, uploaded });
+    } catch (error) {
+      // The backend checks the same rules and more (the version limit, a file that only claims to
+      // be a PDF or DOCX), so its reason is shown as it is.
+      setProblem(
+        error instanceof UploadRefusedError
+          ? { field: error.field, message: error.message }
+          : { field: 'file', message: UPLOAD_FAILED },
+      );
+      setSending(false);
+      return;
+    }
     close();
   }
 
@@ -153,8 +172,8 @@ export function UploadResumeDialog({
           <button type="button" className="button" onClick={close}>
             Cancel
           </button>
-          <button type="submit" className="button button-primary">
-            Upload
+          <button type="submit" className="button button-primary" disabled={sending}>
+            {sending ? 'Uploading…' : 'Upload'}
           </button>
         </div>
       </form>

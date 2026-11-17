@@ -3,6 +3,7 @@ from django.urls import path
 
 from accounts.api import SessionView
 from applications.api import ApplicationRecordsView
+from resumes.api import ResumeVersionsView
 
 
 # Reports only that the process is up, so a database outage does not make the
@@ -15,4 +16,5 @@ urlpatterns = [
     path('api/health/', health),
     path('api/session/', SessionView.as_view()),
     path('api/applications/', ApplicationRecordsView.as_view()),
+    path('api/resumes/', ResumeVersionsView.as_view()),
 ]

@@ -1,7 +1,7 @@
 import { fireEvent, screen, within } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { sampleResumeVersions } from './sampleData';
-import { renderAt } from './test-utils';
+import { fakeResumesBackend, renderAt, renderFromApi } from './test-utils';
 import type { ResumeVersion } from './types';
 
 function renderPage(initialResumes?: ResumeVersion[]) {
@@ -15,6 +15,26 @@ function row(versionName: string) {
 function openMenu(versionName: string) {
   fireEvent.click(screen.getByRole('button', { name: `More actions for ${versionName}` }));
 }
+
+test('the list shows the versions the backend returns for the signed-in student', async () => {
+  const backend = fakeResumesBackend(sampleResumeVersions.slice(0, 2));
+
+  await renderFromApi('/resumes', backend);
+
+  expect(backend).toHaveBeenCalledWith('/api/resumes/');
+  expect(screen.getByText('2 of 10 resume versions used')).toBeInTheDocument();
+  expect(row('Software Developer - General').getByText('Confirmed')).toBeInTheDocument();
+  expect(row('Cloud Co-op').getByText('Needs review')).toBeInTheDocument();
+});
+
+test('when the versions cannot be loaded the page says so and upload is unavailable', async () => {
+  await renderFromApi('/resumes', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'Your resumes could not be loaded. Check that the backend is running, then reload the page.',
+  );
+  expect(screen.getByRole('button', { name: 'Upload resume' })).toBeDisabled();
+});
 
 test('the table shows each version with its parse status, primary marker and upload date', () => {
   renderPage();

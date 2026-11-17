@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { PageHeader } from '../../shared/ui/PageHeader';
+import { uploadResume } from './api';
 import { DeleteVersionConfirm } from './DeleteVersionConfirm';
 import { formatUploaded } from './format';
 import { ParseStatusBadge } from './ParseStatusBadge';
 import { RowMenu, type RowMenuItem } from './RowMenu';
 import { useResumes } from './store';
-import { emptySections, RESUME_VERSION_LIMIT, type ParseStatus, type ResumeVersion } from './types';
+import { RESUME_VERSION_LIMIT, type ParseStatus, type ResumeVersion } from './types';
 import { UploadResumeDialog } from './UploadResumeDialog';
 import './resumes.css';
 
@@ -23,7 +24,7 @@ const statusActions: Partial<
 export type ResumesPageState = { announcement: string } | null;
 
 export function ResumesPage() {
-  const { resumes, dispatch } = useResumes();
+  const { resumes, status, dispatch } = useResumes();
   const location = useLocation();
   const [pendingDelete, setPendingDelete] = useState<ResumeVersion | null>(null);
   const [announcement, setAnnouncement] = useState('');
@@ -57,22 +58,12 @@ export function ResumesPage() {
     return items;
   }
 
-  // New uploads start parsing straight away, so they join the list as Processing.
-  function addUpload({ versionName, uploaded }: { versionName: string; uploaded: string }) {
-    dispatch({
-      type: 'created',
-      resume: {
-        id: crypto.randomUUID(),
-        versionName,
-        parseStatus: 'Processing',
-        isPrimary: false,
-        uploaded,
-        parseAttempts: 1,
-        failureReason: '',
-        sections: emptySections(),
-      },
-    });
-    setAnnouncement(`${versionName} was uploaded. Parsing has started.`);
+  // The backend stores the file and returns the new version, marked Processing. A refusal or a
+  // failure rejects, and the dialog shows why.
+  async function addUpload({ versionName, file }: { versionName: string; file: File }) {
+    const resume = await uploadResume(file, versionName);
+    dispatch({ type: 'created', resume });
+    setAnnouncement(`${resume.versionName} was uploaded. Parsing has started.`);
   }
 
   return (
@@ -89,7 +80,7 @@ export function ResumesPage() {
         <button
           type="button"
           className="button button-primary"
-          disabled={atLimit}
+          disabled={atLimit || status !== 'ready'}
           onClick={() => setUploading(true)}
         >
           <span aria-hidden="true" className="button-icon">
@@ -120,7 +111,13 @@ export function ResumesPage() {
         />
       )}
 
-      {resumes.length === 0 ? (
+      {status === 'loading' ? (
+        <p className="panel empty-state">Loading your resumes…</p>
+      ) : status === 'failed' ? (
+        <p className="notice-error" role="alert">
+          Your resumes could not be loaded. Check that the backend is running, then reload the page.
+        </p>
+      ) : resumes.length === 0 ? (
         <div className="panel empty-state">
           <p>You have not uploaded a resume yet.</p>
           <button

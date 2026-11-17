@@ -16,14 +16,18 @@ services:
     env_file: .env
     environment:
       POSTGRES_HOST: db
+      # Outside /app, which is the source folder, so uploads never land in the repository.
+      RESUME_FILES_DIR: /data/resumes
     command: sh -c 'python manage.py migrate && python manage.py seed_students && python manage.py runserver 0.0.0.0:8000'
     ports:
       - '8000:8000'
     volumes:
       - ./backend:/app
+      - resumefiles:/data/resumes
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
+  resumefiles:
