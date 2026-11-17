@@ -42,6 +42,16 @@ def find_by_id(student, comparison_id):
     return _to_domain(row)
 
 
+# Finds a comparison for background processing
+def find_by_id_for_processing(comparison_id):
+    try:
+        row = ComparisonModel.objects.get(pk=comparison_id)
+    except ComparisonModel.DoesNotExist:
+        return None
+
+    return _to_domain(row)
+
+
 # Marks a comparison as being processed
 def save_processing(result):
     row = ComparisonModel.objects.get(pk=result.id)
