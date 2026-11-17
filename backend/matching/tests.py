@@ -1,6 +1,10 @@
+from datetime import UTC, datetime
+
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TestCase
 from unittest import mock
+
+from resumes.models import ResumeVersionModel
 
 from . import repository, services, worker
 from .domain import (
@@ -13,6 +17,18 @@ from .domain import (
 )
 from .models import ComparisonModel
 
+def create_resume(owner, version_name='Cloud Resume'):
+    return ResumeVersionModel.objects.create(
+        owner=owner,
+        version_name=version_name,
+        parse_status='Confirmed',
+        is_primary=True,
+        file_name='resume.pdf',
+        file_type='application/pdf',
+        size_bytes=100,
+        storage_key=f'test/{owner.id}/{version_name}.pdf',
+        uploaded_at=datetime.now(UTC),
+    )
 
 def comparison(**changes):
     fields = {
@@ -271,24 +287,39 @@ class ComparisonServiceTests(TestCase):
             password='demo-pass',
         )
 
+        self.resume = create_resume(
+            self.student,
+            'Cloud Resume',
+        )
+
     def test_create_comparison_saves_and_queues_request(self):
         queued = []
 
         result = services.create_comparison(
             student=self.student,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             enqueue=lambda comparison_id, simulate_failure: queued.append(
                 (comparison_id, simulate_failure)
             ),
         )
 
-        self.assertEqual(result.status, MatchStatus.QUEUED)
+        self.assertEqual(
+            result.status,
+            MatchStatus.QUEUED,
+        )
+
         self.assertIsNotNone(result.id)
-        self.assertEqual(queued, [(result.id, False)])
+
+        self.assertEqual(
+            queued,
+            [(result.id, False)],
+        )
 
     def test_missing_selections_are_rejected(self):
-        with self.assertRaises(services.ComparisonValidationError) as caught:
+        with self.assertRaises(
+            services.ComparisonValidationError
+        ) as caught:
             services.create_comparison(
                 student=self.student,
                 resume_id='',
@@ -304,6 +335,35 @@ class ComparisonServiceTests(TestCase):
             },
         )
 
+    def test_student_cannot_compare_another_students_resume(self):
+        other_student = User.objects.create_user(
+            'daniel.reyes',
+            password='demo-pass',
+        )
+
+        other_resume = create_resume(
+            other_student,
+            'Other Resume',
+        )
+
+        with self.assertRaises(
+            services.ComparisonValidationError
+        ) as caught:
+            services.create_comparison(
+                student=self.student,
+                resume_id=str(other_resume.pk),
+                job_posting_id='job-1',
+                enqueue=lambda *_: None,
+            )
+
+        self.assertEqual(
+            caught.exception.field_errors,
+            {
+                'resumeId':
+                    'Choose one of your resumes to compare.',
+            },
+        )
+
     def test_student_cannot_get_another_students_comparison(self):
         other_student = User.objects.create_user(
             'daniel.reyes',
@@ -312,12 +372,14 @@ class ComparisonServiceTests(TestCase):
 
         result = services.create_comparison(
             student=self.student,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             enqueue=lambda *_: None,
         )
 
-        with self.assertRaises(services.ComparisonNotFoundError):
+        with self.assertRaises(
+            services.ComparisonNotFoundError
+        ):
             services.get_comparison_result(
                 other_student,
                 result.id,
@@ -326,7 +388,7 @@ class ComparisonServiceTests(TestCase):
     def test_student_can_get_their_own_comparison(self):
         result = services.create_comparison(
             student=self.student,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             enqueue=lambda *_: None,
         )
@@ -336,13 +398,20 @@ class ComparisonServiceTests(TestCase):
             result.id,
         )
 
-        self.assertEqual(found.id, result.id)
-        self.assertEqual(found.status, MatchStatus.QUEUED)
+        self.assertEqual(
+            found.id,
+            result.id,
+        )
+
+        self.assertEqual(
+            found.status,
+            MatchStatus.QUEUED,
+        )
 
     def test_failed_comparison_can_be_retried(self):
         original = services.create_comparison(
             student=self.student,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             enqueue=lambda *_: None,
         )
@@ -350,7 +419,7 @@ class ComparisonServiceTests(TestCase):
         failed = ComparisonResult(
             id=original.id,
             owner_id=self.student.id,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             status=MatchStatus.FAILED,
             failure_reason='Comparison could not be completed.',
@@ -368,9 +437,20 @@ class ComparisonServiceTests(TestCase):
             ),
         )
 
-        self.assertNotEqual(retried.id, original.id)
-        self.assertEqual(retried.status, MatchStatus.QUEUED)
-        self.assertEqual(queued, [(retried.id, False)])
+        self.assertNotEqual(
+            retried.id,
+            original.id,
+        )
+
+        self.assertEqual(
+            retried.status,
+            MatchStatus.QUEUED,
+        )
+
+        self.assertEqual(
+            queued,
+            [(retried.id, False)],
+        )
 
 class ComparisonWorkerTests(TestCase):
     def setUp(self):
@@ -463,18 +543,26 @@ class ComparisonApiTests(TestCase):
             'maya.okafor',
             password='demo-pass',
         )
+
         self.other_student = User.objects.create_user(
             'daniel.reyes',
             password='demo-pass',
         )
 
+        self.resume = create_resume(
+            self.student,
+            'Cloud Resume',
+        )
+
     def create_comparison(self, data=None):
         body = data or {
-            'resumeId': '2',
+            'resumeId': str(self.resume.pk),
             'jobPostingId': 'job-1',
         }
 
-        with mock.patch('matching.worker.enqueue_comparison'):
+        with mock.patch(
+            'matching.worker.enqueue_comparison'
+        ):
             return self.client.post(
                 '/api/matching/comparisons/',
                 body,
@@ -486,16 +574,41 @@ class ComparisonApiTests(TestCase):
 
         response = self.create_comparison()
 
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(
+            response.status_code,
+            202,
+        )
 
         result = response.json()
 
-        self.assertIsNotNone(result['id'])
-        self.assertEqual(result['resumeId'], '2')
-        self.assertEqual(result['jobPostingId'], 'job-1')
-        self.assertEqual(result['status'], 'Queued')
-        self.assertEqual(result['matchedQualifications'], [])
-        self.assertEqual(result['qualificationGaps'], [])
+        self.assertIsNotNone(
+            result['id'],
+        )
+
+        self.assertEqual(
+            result['resumeId'],
+            str(self.resume.pk),
+        )
+
+        self.assertEqual(
+            result['jobPostingId'],
+            'job-1',
+        )
+
+        self.assertEqual(
+            result['status'],
+            'Queued',
+        )
+
+        self.assertEqual(
+            result['matchedQualifications'],
+            [],
+        )
+
+        self.assertEqual(
+            result['qualificationGaps'],
+            [],
+        )
 
     def test_missing_selection_returns_validation_messages(self):
         self.client.force_login(self.student)
@@ -507,13 +620,18 @@ class ComparisonApiTests(TestCase):
             }
         )
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.status_code,
+            400,
+        )
 
         self.assertEqual(
             response.json(),
             {
-                'resumeId': 'Choose a resume to compare.',
-                'jobPostingId': 'Choose a job posting to compare.',
+                'resumeId':
+                    'Choose a resume to compare.',
+                'jobPostingId':
+                    'Choose a job posting to compare.',
             },
         )
 
@@ -526,24 +644,40 @@ class ComparisonApiTests(TestCase):
             f"/api/matching/comparisons/{created['id']}/"
         )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['status'], 'Queued')
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        self.assertEqual(
+            response.json()['status'],
+            'Queued',
+        )
 
     def test_student_cannot_access_another_students_comparison(self):
         self.client.force_login(self.student)
 
         created = self.create_comparison().json()
 
-        self.client.force_login(self.other_student)
+        self.client.force_login(
+            self.other_student,
+        )
 
         response = self.client.get(
             f"/api/matching/comparisons/{created['id']}/"
         )
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.status_code,
+            404,
+        )
+
         self.assertEqual(
             response.json(),
-            {'detail': 'Comparison not found.'},
+            {
+                'detail':
+                    'Comparison not found.',
+            },
         )
 
     def test_failed_comparison_can_be_retried(self):
@@ -554,36 +688,60 @@ class ComparisonApiTests(TestCase):
         failed = ComparisonResult(
             id=created['id'],
             owner_id=self.student.id,
-            resume_id='2',
+            resume_id=str(self.resume.pk),
             job_posting_id='job-1',
             status=MatchStatus.FAILED,
             failure_reason='Comparison could not be completed.',
         )
 
-        repository.save_failed_result(failed)
+        repository.save_failed_result(
+            failed,
+        )
 
-        with mock.patch('matching.worker.enqueue_comparison'):
+        with mock.patch(
+            'matching.worker.enqueue_comparison'
+        ):
             response = self.client.post(
                 f"/api/matching/comparisons/{created['id']}/retry/",
                 {},
                 content_type='application/json',
             )
 
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(
+            response.status_code,
+            202,
+        )
 
         retried = response.json()
 
-        self.assertNotEqual(retried['id'], created['id'])
-        self.assertEqual(retried['status'], 'Queued')
-        self.assertEqual(retried['resumeId'], '2')
-        self.assertEqual(retried['jobPostingId'], 'job-1')
+        self.assertNotEqual(
+            retried['id'],
+            created['id'],
+        )
+
+        self.assertEqual(
+            retried['status'],
+            'Queued',
+        )
+
+        self.assertEqual(
+            retried['resumeId'],
+            str(self.resume.pk),
+        )
+
+        self.assertEqual(
+            retried['jobPostingId'],
+            'job-1',
+        )
 
     def test_unsigned_student_is_refused(self):
         create_response = self.client.post(
             '/api/matching/comparisons/',
             {
-                'resumeId': '2',
-                'jobPostingId': 'job-1',
+                'resumeId':
+                    str(self.resume.pk),
+                'jobPostingId':
+                    'job-1',
             },
             content_type='application/json',
         )
@@ -592,5 +750,12 @@ class ComparisonApiTests(TestCase):
             '/api/matching/comparisons/1/'
         )
 
-        self.assertEqual(create_response.status_code, 403)
-        self.assertEqual(get_response.status_code, 403)
+        self.assertEqual(
+            create_response.status_code,
+            403,
+        )
+
+        self.assertEqual(
+            get_response.status_code,
+            403,
+        )

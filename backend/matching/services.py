@@ -1,3 +1,5 @@
+from resumes import services as resume_services
+
 from . import repository
 from .domain import ComparisonResult, MatchStatus
 
@@ -10,6 +12,16 @@ class ComparisonValidationError(Exception):
 
 class ComparisonNotFoundError(Exception):
     pass
+
+
+# Checks whether the selected resume belongs to the student
+def student_has_resume(student, resume_id):
+    resumes = resume_services.list_resume_versions(student)
+
+    return any(
+        str(resume.id) == str(resume_id)
+        for resume in resumes
+    )
 
 
 # Creates a queued comparison and sends it to the local worker
@@ -27,6 +39,12 @@ def create_comparison(
 
     if not job_posting_id.strip():
         errors['jobPostingId'] = 'Choose a job posting to compare.'
+
+    if (
+        resume_id.strip()
+        and not student_has_resume(student, resume_id)
+    ):
+        errors['resumeId'] = 'Choose one of your resumes to compare.'
 
     if errors:
         raise ComparisonValidationError(errors)
@@ -55,7 +73,10 @@ def create_comparison(
 
 # Gets one comparison only when it belongs to the student
 def get_comparison_result(student, comparison_id):
-    result = repository.find_by_id(student, comparison_id)
+    result = repository.find_by_id(
+        student,
+        comparison_id,
+    )
 
     if result is None:
         raise ComparisonNotFoundError()
@@ -64,8 +85,15 @@ def get_comparison_result(student, comparison_id):
 
 
 # Retries a failed comparison using the same selections
-def retry_comparison(student, comparison_id, enqueue=None):
-    previous = get_comparison_result(student, comparison_id)
+def retry_comparison(
+    student,
+    comparison_id,
+    enqueue=None,
+):
+    previous = get_comparison_result(
+        student,
+        comparison_id,
+    )
 
     if previous.status != MatchStatus.FAILED:
         return previous
