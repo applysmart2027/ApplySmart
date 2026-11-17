@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TestCase
 
+from . import repository
 from .domain import (
     ComparisonResult,
     MatchStatus,
@@ -123,3 +124,142 @@ class ComparisonModelTests(TestCase):
         self.assertEqual(loaded.failure_reason, '')
         self.assertIsNotNone(loaded.created_at)
         self.assertIsNotNone(loaded.updated_at)
+
+
+class ComparisonRepositoryTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            'maya.okafor',
+            password='demo-pass',
+        )
+
+    def test_queued_comparison_can_be_saved_and_found(self):
+        result = ComparisonResult(
+            id=None,
+            owner_id=self.student.id,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.READY,
+        )
+
+        saved = repository.save_queued_comparison(result)
+        found = repository.find_by_id(self.student, saved.id)
+
+        self.assertIsNotNone(saved.id)
+        self.assertEqual(saved.status, MatchStatus.QUEUED)
+        self.assertEqual(found.id, saved.id)
+        self.assertEqual(found.resume_id, '2')
+        self.assertEqual(found.job_posting_id, 'job-1')
+
+    def test_student_cannot_find_another_students_comparison(self):
+        other_student = User.objects.create_user(
+            'daniel.reyes',
+            password='demo-pass',
+        )
+
+        result = ComparisonResult(
+            id=None,
+            owner_id=self.student.id,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.READY,
+        )
+
+        saved = repository.save_queued_comparison(result)
+
+        self.assertIsNone(
+            repository.find_by_id(other_student, saved.id)
+        )
+
+    def test_comparison_can_move_to_processing(self):
+        result = repository.save_queued_comparison(
+            ComparisonResult(
+                id=None,
+                owner_id=self.student.id,
+                resume_id='2',
+                job_posting_id='job-1',
+                status=MatchStatus.READY,
+            )
+        )
+
+        updated = repository.save_processing(result)
+
+        self.assertEqual(updated.status, MatchStatus.PROCESSING)
+        self.assertEqual(
+            ComparisonModel.objects.get(pk=result.id).status,
+            'Processing',
+        )
+
+    def test_completed_result_round_trips_through_database(self):
+        result = repository.save_queued_comparison(
+            ComparisonResult(
+                id=None,
+                owner_id=self.student.id,
+                resume_id='2',
+                job_posting_id='job-1',
+                status=MatchStatus.READY,
+            )
+        )
+
+        qualification = Qualification(
+            id='qual-1',
+            title='AWS experience',
+            priority=QualificationPriority.REQUIRED,
+            job_evidence='AWS experience is required.',
+        )
+
+        completed = ComparisonResult(
+            id=result.id,
+            owner_id=self.student.id,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.COMPLETED,
+            matched_qualifications=[
+                QualificationMatch(
+                    qualification=qualification,
+                    resume_evidence='Used AWS EC2 and Lambda.',
+                )
+            ],
+        )
+
+        repository.save_completed_result(completed)
+        loaded = repository.find_by_id(self.student, result.id)
+
+        self.assertEqual(loaded.status, MatchStatus.COMPLETED)
+        self.assertEqual(
+            loaded.matched_qualifications[0].qualification.title,
+            'AWS experience',
+        )
+        self.assertEqual(
+            loaded.matched_qualifications[0].resume_evidence,
+            'Used AWS EC2 and Lambda.',
+        )
+
+    def test_failed_result_stores_failure_reason(self):
+        result = repository.save_queued_comparison(
+            ComparisonResult(
+                id=None,
+                owner_id=self.student.id,
+                resume_id='2',
+                job_posting_id='job-1',
+                status=MatchStatus.READY,
+            )
+        )
+
+        failed = ComparisonResult(
+            id=result.id,
+            owner_id=self.student.id,
+            resume_id='2',
+            job_posting_id='job-1',
+            status=MatchStatus.FAILED,
+            failure_reason='Comparison could not be completed.',
+        )
+
+        repository.save_failed_result(failed)
+        loaded = repository.find_by_id(self.student, result.id)
+
+        self.assertEqual(loaded.status, MatchStatus.FAILED)
+        self.assertEqual(
+            loaded.failure_reason,
+            'Comparison could not be completed.',
+        )
