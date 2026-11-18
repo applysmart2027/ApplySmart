@@ -23,3 +23,15 @@ def save_preferences(
     )
     preferences.validate()
     return repository.save(preferences)
+
+# Get job recommendations for a student based on their preferences
+def get_recommendations(student_id, job_api_client):
+    preferences = get_preferences(student_id)
+
+    return job_api_client.search_jobs(
+        preferences=preferences,
+    )
+
+#Get selected job details by job ID
+def get_job_details(job_id, job_api_client):
+    return job_api_client.get_job_by_id(job_id)
