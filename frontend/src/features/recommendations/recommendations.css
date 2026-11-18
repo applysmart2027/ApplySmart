@@ -3,6 +3,7 @@
   gap: var(--space-6);
 }
 
+/*nav*/
 .recommendations-top-nav {
   display: flex;
   flex-wrap: wrap;
@@ -29,12 +30,37 @@
   background: var(--color-accent-soft);
 }
 
+/*headings*/
+.recommendation-content h2,
+.job-details-section h2,
+.progress-section h2,
+.reminders-form h2,
+.reminders-section h2,
+.empty-state h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.progress-section h2,
+.reminders-form h2,
+.reminders-section h2 {
+  margin-bottom: var(--space-4);
+}
+
+/*recommended jobs*/
 .recommendations-search {
   max-width: 32rem;
 }
 
-.recommendation-list {
+.recommendation-list,
+.progress-bars,
+.progress-industry-list,
+.recent-applications,
+.reminders-list {
   display: grid;
+}
+
+.recommendation-list {
   gap: var(--space-4);
 }
 
@@ -59,8 +85,7 @@
 }
 
 .recommendation-content h2 {
-  margin: 0 0 var(--space-1);
-  font-size: var(--text-lg);
+  margin-bottom: var(--space-1);
 }
 
 .recommendation-company {
@@ -68,10 +93,31 @@
 }
 
 .recommendation-company,
-.recommendation-location {
-  margin: 0;
+.recommendation-location,
+.recent-application-row p,
+.reminder-content p,
+.recent-application-date,
+.reminder-date {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+}
+
+.recommendation-company,
+.recommendation-location {
+  margin: 0;
+}
+
+.recommendation-location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.location-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  opacity: 0.65;
 }
 
 .recommendation-tags {
@@ -81,18 +127,20 @@
   margin-top: var(--space-3);
 }
 
-.recommendation-tags span {
-  padding: 0 var(--space-3);
+.recommendation-tags span,
+.application-status {
   border: var(--border);
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
   font-weight: 600;
 }
 
-.recommendations-empty h2,
-.empty-state h2 {
-  margin: 0;
-  font-size: var(--text-lg);
+.recommendation-tags span {
+  padding: 0 var(--space-3);
+}
+
+.application-status {
+  padding: var(--space-1) var(--space-3);
 }
 
 .secondary-page-header {
@@ -117,6 +165,7 @@
   font-size: var(--text-lg);
 }
 
+/*preferences*/
 .preferences-form {
   display: grid;
   gap: var(--space-6);
@@ -146,13 +195,18 @@
   gap: var(--space-2);
 }
 
-.preferences-actions {
+.preferences-actions,
+.reminders-form-actions,
+.reminder-actions {
   display: flex;
+}
+
+.preferences-actions {
   justify-content: flex-end;
   gap: var(--space-3);
 }
 
-/* Job Details */
+/*job details*/
 .job-details {
   display: grid;
   gap: var(--space-6);
@@ -170,11 +224,6 @@
   border-top: var(--border);
 }
 
-.job-details-section h2 {
-  margin: 0;
-  font-size: var(--text-lg);
-}
-
 .job-details-section ul {
   margin: 0;
   padding-left: var(--space-6);
@@ -184,9 +233,149 @@
   margin-top: var(--space-2);
 }
 
+/*summary*/
+.progress-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.progress-metric {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.progress-metric span {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.progress-metric strong {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.progress-summary-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
+}
+
+.progress-section,
+.reminders-form,
+.reminders-section {
+  padding: var(--space-6);
+}
+
+.progress-bars {
+  gap: var(--space-4);
+}
+
+.progress-bar-row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) 2rem;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.progress-bar-track {
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+.progress-industry-list {
+  gap: var(--space-3);
+}
+
+.progress-industry-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border);
+}
+
+.progress-industry-list > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.recent-application-row,
+.reminder-row {
+  display: grid;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: var(--border);
+}
+
+.recent-application-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.reminder-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.recent-application-row:first-child,
+.reminder-row:first-child {
+  padding-top: 0;
+}
+
+.recent-application-row:last-child,
+.reminder-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.recent-application-row p {
+  margin: 0;
+}
+
+/*reminders*/
+.reminders-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.reminders-form-actions {
+  justify-content: flex-end;
+  margin-top: var(--space-4);
+}
+
+.reminder-content p {
+  margin-top: var(--space-1);
+}
+
+.reminder-actions {
+  gap: var(--space-2);
+}
+
+@media (max-width: 64rem) {
+  .progress-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .progress-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 48rem) {
-  .recommendation-card {
-    grid-template-columns: minmax(0, 1fr);
+  .recommendation-card,
+  .reminder-row {
+    grid-template-columns: 1fr;
   }
 
   .recommendation-logo {
@@ -198,20 +387,23 @@
     padding: var(--space-4);
   }
 
-  .preferences-actions {
+  .preferences-actions,
+  .reminders-form-actions {
     justify-content: flex-start;
+  }
+
+  .reminders-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reminder-actions {
+    flex-wrap: wrap;
   }
 }
 
-.recommendation-location {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.location-icon {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-  opacity: 0.65;
+@media (max-width: 40rem) {
+  .progress-metrics,
+  .recent-application-row {
+    grid-template-columns: 1fr;
+  }
 }

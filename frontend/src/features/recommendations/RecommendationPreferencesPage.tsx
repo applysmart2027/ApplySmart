@@ -15,7 +15,13 @@ export function RecommendationPreferencesPage() {
         <p className="page-intro">Set your preferences to get recommendations tailored to you.</p>
       </div>
 
-      <form className="preferences-form panel">
+      <form
+        className="preferences-form panel"
+        onSubmit={(event) => {
+          event.preventDefault();
+
+        }}
+      >
         <fieldset className="preferences-group">
           <legend>Job Types</legend>
 
